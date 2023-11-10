@@ -26,7 +26,8 @@
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "preLaunchTask": "C/C++: Compilar - Linux"
         },
         {
             "name": "(gdb) Debugar - Windows",

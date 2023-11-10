@@ -186,10 +186,12 @@ bool Compara_Frases(char* frase1, char* frase2)
 
     for(int i = 0; i < Tamanho1 && i < Tamanho2; i++)
     {
-        if(frase1[i] < frase2[i])
+        if(frase1[i] < frase2[i]){
             return true;
-        else if(frase1[i] > frase2[i])
+        }
+        else if(frase1[i] > frase2[i]){
             return false;
+        }
     }
     
     if(Tamanho1 < Tamanho2)
@@ -540,11 +542,10 @@ void Alterar_Senha_Usuario(S_Usuario* usuario)
 
 void Alterar_Nome_Usuario(S_Usuario* usuario)
 {
-    printf(">> Digite o novo nome: ");
+    printf("Digite o novo nome: ");
     fgets(usuario->Nome, NOME_TAM, stdin);
     Retira_quebra_de_linha(usuario->Nome);
 
-    printf(">> Nome alterado com sucesso! <<\n");
     return;
 }
 
@@ -552,7 +553,7 @@ void Alterar_Email_Usuario(S_Usuario* usuario)
 {
     char Senha_Confirma[SENHA_TAM];
     
-    printf(">> Digite a senha atual: ");
+    printf("Digite a senha atual: ");
     fgets(Senha_Confirma, SENHA_TAM, stdin);
     Retira_quebra_de_linha(Senha_Confirma);
 
@@ -562,21 +563,19 @@ void Alterar_Email_Usuario(S_Usuario* usuario)
         return;
     }
 
-    printf(">> Digite o novo email: ");
+    printf("Digite o novo email: ");
     fgets(usuario->Email, NOME_TAM, stdin);
     Retira_quebra_de_linha(usuario->Email);
 
-    printf(">> Email alterado com sucesso! <<\n");
     return;
 }
 
 void Alterar_Bio_Usuario(S_Usuario* usuario)
 {
-    printf(">> Escreva uma breve descricao sua: ");
+    printf("Escreva uma breve descricao sua: ");
     fgets(usuario->Bio, NOME_TAM, stdin);
     Retira_quebra_de_linha(usuario->Bio);
 
-    printf(">> Sua Bio foi atualizada com sucesso! <<\n");
     return;
 }
 
@@ -621,14 +620,14 @@ void Imprime_Usuarios(S_ArrayUsuarios* vetor_usuarios)
         return;
     }
     
-    printf("| %-50s | %-50s | %-50s | %-50s |\n", "ID", "Nome", "Email", "Status"); //titulo
+    printf("| %-50s | %-50s | %-50s | %-50s |\n", "ID", "Nome", "Email", "Bio"); //titulo
 
     for(int i = 0; i < vetor_usuarios->Quantidade; i++){ //percorre o vetor de usuarios recebido pela funcao
         Imprime_Usuario_Em_Formato_Tabela(&(vetor_usuarios->Usuarios[i]));
     }
 }
 
-void SalvarArquivo_Usuarios( S_ArrayUsuarios* array, char* arquivo)
+void SalvarArquivo_Usuarios( S_ArrayUsuarios* vetor_usuarios, char* arquivo)
 {
     FILE* Arquivo = fopen(arquivo, "wb");
     if(Arquivo == NULL)
@@ -637,18 +636,13 @@ void SalvarArquivo_Usuarios( S_ArrayUsuarios* array, char* arquivo)
         return;
     }
     
-    fwrite(&(array->Quantidade), sizeof(unsigned int), 1, Arquivo);
-    fwrite(array->Usuarios, sizeof(S_Usuario), array->Quantidade, Arquivo);
-    for(int i = 0; i < array->Quantidade; i++)
+    fwrite(&(vetor_usuarios->Quantidade), sizeof(unsigned int), 1, Arquivo);
+    fwrite(vetor_usuarios->Usuarios, sizeof(S_Usuario), vetor_usuarios->Quantidade, Arquivo);
+    for(int i = 0; i < vetor_usuarios->Quantidade; i++)
     {
-        fwrite(array->Usuarios[i].PostagensCurtidas.Id,
-                sizeof(unsigned int),
-                array->Usuarios[i].PostagensCurtidas.Quantidade,
-                Arquivo);
-        fwrite(array->Usuarios[i].PostagensComentadas.Id,
-                sizeof(unsigned int),
-                array->Usuarios[i].PostagensComentadas.Quantidade,
-                Arquivo);
+        fwrite(vetor_usuarios->Usuarios[i].PostagensCurtidas.Id, sizeof(unsigned int), vetor_usuarios->Usuarios[i].PostagensCurtidas.Quantidade, Arquivo);
+
+        fwrite(vetor_usuarios->Usuarios[i].PostagensComentadas.Id, sizeof(unsigned int), vetor_usuarios->Usuarios[i].PostagensComentadas.Quantidade, Arquivo);
     }
     
     fclose(Arquivo);
@@ -700,27 +694,31 @@ void CarregarArquivo_Usuarios(S_ArrayUsuarios* vetor_Usuarios, char* arquivo)
 S_ArrayUsuarios Buscar_Usuarios_PorEmail( S_ArrayUsuarios* array, char* email)
 {
     S_ArrayUsuarios Usuarios_Encontrados;
+
     Usuarios_Encontrados.Quantidade = 0;
     Usuarios_Encontrados.Usuarios = NULL;
+
     for(int i = 0; i < array->Quantidade; i++)
     {
-        if(AcharParte_NaFrase(array->Usuarios[i].Email, email))
+        if(AcharParte_NaFrase(array->Usuarios[i].Email, email)){
             Adicionar_Usuario_No_Vetor(&Usuarios_Encontrados, &array->Usuarios[i]);
+        }
     }
     return Usuarios_Encontrados;
 }
 
-S_ArrayUsuarios Buscar_Usuarios_PorNome( S_ArrayUsuarios* array, char* nome)
+S_ArrayUsuarios Buscar_Usuarios_PorNome( S_ArrayUsuarios* vetor_usuarios, char* nome)
 {
     S_ArrayUsuarios Usuarios_Encontrados;
 
     Usuarios_Encontrados.Quantidade = 0;
     Usuarios_Encontrados.Usuarios = NULL;
 
-    for(int i = 0; i < array->Quantidade; i++)
+    for(int i = 0; i < vetor_usuarios->Quantidade; i++)
     {
-        if(AcharParte_NaFrase(array->Usuarios[i].Nome, nome))
-            Adicionar_Usuario_No_Vetor(&Usuarios_Encontrados, &array->Usuarios[i]);
+        if(AcharParte_NaFrase(vetor_usuarios->Usuarios[i].Nome, nome)){
+            Adicionar_Usuario_No_Vetor(&Usuarios_Encontrados, &vetor_usuarios->Usuarios[i]);
+        }
     }
     return Usuarios_Encontrados;
 }
@@ -735,32 +733,33 @@ bool Encontra_Usuario_NaLista( S_ArrayUsuarios* array, S_Usuario* usuario)
     return false;
 }
 
-void Ordenar_Usuarios(S_ArrayUsuarios* array, int tipo_ordenacao)
+void Ordenar_Usuarios(S_ArrayUsuarios* vetor_usuarios, int tipo_ordenacao)
 {
-    for(int i = 0; i < array->Quantidade; i++)
+    for(int i = 0; i < vetor_usuarios->Quantidade; i++)
     {
-        S_Usuario Buffer;
+        S_Usuario usuario_temporario;
+
         bool Resultado_Cheque;
 
-        for(int j = i; j < array->Quantidade; j++)
+        for(int j = i; j < vetor_usuarios->Quantidade; j++)
         {
             switch (tipo_ordenacao)
             {
             case 1:
-                Resultado_Cheque = Compara_Frases(array->Usuarios[j].Nome, array->Usuarios[i].Nome);
+                Resultado_Cheque = Compara_Frases(vetor_usuarios->Usuarios[j].Nome, vetor_usuarios->Usuarios[i].Nome);
                 break;
             case 2:
-                Resultado_Cheque = Compara_Frases(array->Usuarios[j].Email, array->Usuarios[i].Email);
+                Resultado_Cheque = Compara_Frases(vetor_usuarios->Usuarios[j].Email, vetor_usuarios->Usuarios[i].Email);
                 break;
             case 0:
-                Resultado_Cheque = array->Usuarios[j].Id < array->Usuarios[i].Id;
+                Resultado_Cheque = vetor_usuarios->Usuarios[j].Id < vetor_usuarios->Usuarios[i].Id;
             }
 
             if(Resultado_Cheque == true)
             {
-                Buffer = array->Usuarios[i];
-                array->Usuarios[i] = array->Usuarios[j];
-                array->Usuarios[j] = Buffer;
+                usuario_temporario = vetor_usuarios->Usuarios[i];
+                vetor_usuarios->Usuarios[i] = vetor_usuarios->Usuarios[j];
+                vetor_usuarios->Usuarios[j] = usuario_temporario;
             }
         } 
     }
@@ -821,8 +820,9 @@ void Liberar_Imagens(S_ArrayImagens* array)
         insta_liberaImagem(array->Imagens[i]);
     }
 
-    if(array->Imagens != NULL)
+    if(array->Imagens != NULL){
         free(array->Imagens);
+    }
     array->Imagens = NULL;
     array->Quantidade = 0;
     return;
@@ -837,8 +837,9 @@ void Liberar_Postagens_Profundo(S_ArrayPostagens* array)
         Liberar_Imagens(&array->Postagens[i].imagens_do_post);
     }
 
-    if(array->Postagens == NULL);
+    if(array->Postagens != NULL){
         free(array->Postagens);
+    }
     array->Postagens = NULL;
     array->Quantidade = 0;
     return;
@@ -850,13 +851,16 @@ void Desalocar_Postagem(S_ArrayPostagens* array)
         return;
 
     (array->Quantidade)--;
-    if(array->Quantidade == 0)
+
+    if(array->Quantidade == 0){
         Liberar_Postagens_Profundo(array);
+    }
     else
     {
         array->Postagens = (S_Postagem *) realloc(array->Postagens, array->Quantidade * sizeof(S_Postagem));
-        if(array->Postagens == NULL)
+        if(array->Postagens == NULL){
             printf("ERRO: De-alocagem de comentario");    
+        }
     }
     return;
 }
@@ -934,10 +938,12 @@ void VerPostagem( S_Postagem* postagem, S_ArrayUsuarios* vetor_usuarios)
 S_ArrayPostagens Achar_Postagens_DoUsuario(S_ArrayPostagens* array, unsigned int id_usuario)
 {
     S_ArrayPostagens Saida = {0, NULL};
+
     for(int i = 0; i < array->Quantidade; i++)
     {
-        if(array->Postagens[i].Autor_Id == id_usuario)
+        if(array->Postagens[i].Autor_Id == id_usuario){
             Adicionar_Postagem_NoArray(&Saida, &array->Postagens[i]);
+        }
     }
     return Saida;
 }
@@ -984,52 +990,54 @@ void Comentar(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned in
     Alocar_Vetor_Id_Com_Valor(&Usuario->PostagensComentadas, postagem->Id); //adiciona as suas informações em que post ele comentou e aumenta o numero de posts
 }
 
-S_Comentario* Achar_Comentario(S_ArrayComentarios* array, int id_comentario)
+S_Comentario* Achar_Comentario(S_ArrayComentarios* vetor_comentarios, int comentario_id)
 {
-    for (int i = 0; i < array->Quantidade; i++)
+    for (int i = 0; i < vetor_comentarios->Quantidade; i++) //percorre o vetor de comentarios
     {
-        if(array->dados_Comentario[i].Id == id_comentario)
-            return &array->dados_Comentario[i];
+        if(vetor_comentarios->dados_Comentario[i].Id == comentario_id){//se id do comentario no vetor for igual ao id informado. retorna os dados do comentario na posicao 'i'
+            return &vetor_comentarios->dados_Comentario[i];
+        }
     }
-    return NULL;
+    return NULL; //se nao achar um comentario com o id informado, retorna nulo
 }
 
 bool Verifica_Autoria( S_Comentario* comentario, unsigned int id_usuario)
 {
-    return comentario->Perfil_Id == id_usuario;
+    return comentario->Perfil_Id == id_usuario; // verifica se o usaurio recebido foi o que realizou o comentario
 }
 
-void Editar_Comentario(S_ArrayComentarios* array, S_Comentario* comentario)
+void Editar_Comentario(S_Comentario* comentario)
 {
-    printf(">> Edite o seu comentario (maximo de 256 caracteres): \n");
+    printf("Edite o seu comentario: \n");
     fgets(comentario->Mensagem, TEXTO_TAM, stdin);
     Retira_quebra_de_linha(comentario->Mensagem);
-    printf(">>> Comentario Editado <<<\n");
+
+    printf("Comentario Editado\n");
     return;
 }
 
 void Recomentar(S_Postagem* postagem, unsigned int id_autor)
 {
-    int id_comentario = -1;
+    int comentario_id = -1; //inicializa o valor da variavel
 
-    printf(">> ID do comentario a ser apagado: ");
-    scanf("%d", &id_comentario);
+    printf("ID do comentario a ser apagado: "); //pede ao usaurio para informar qual comentario deve ser apagado
+    scanf("%d", &comentario_id);
     getchar();
 
-    S_Comentario* Comentario = Achar_Comentario(&postagem->Comentarios, id_comentario);
-    if(Comentario == NULL)
+    S_Comentario* Comentario = Achar_Comentario(&postagem->Comentarios, comentario_id); //funcao que acha o comentario que deve ser apagado e o retorna
+
+    if(Comentario == NULL) //se comentario for nulo signiica que ele nao existe
     {
-        printf(">>>> Este Comentario nao existe! <<<<\n");
+        printf("Este comentario nao existe!!!\n");
         return;
     }
-    if(Verifica_Autoria(Comentario, id_autor) == false)
+    if(Verifica_Autoria(Comentario, id_autor) == false) // verifica se foi o usuario logado que realizou o comentario informado
     {
-        printf(">>>> Este Comentario pertence a outro usuario! <<<<\n");
+        printf("Este comentario pertence a outro usuario!!! Voce nao tem autorizacao para modifica-lo\n");
         return;
     }
 
-    Editar_Comentario(&postagem->Comentarios, Comentario);
-    printf(">>> Postagem apagada! <<<\n");
+    Editar_Comentario(Comentario); //chamada da fucao que edita um comentario
 }
 
 int Achar_Posicao_DoComentario(S_ArrayComentarios* array, unsigned int id_comentario)
@@ -1053,6 +1061,7 @@ void Desalocar_Comentario(S_ArrayComentarios* array)
     else
     {
         array->dados_Comentario = (S_Comentario *) realloc(array->dados_Comentario, array->Quantidade * sizeof(S_Comentario));
+
         if(array->dados_Comentario == NULL)
             printf("ERRO: De-alocagem de comentario");    
     }
@@ -1069,19 +1078,19 @@ void Descomentar(S_ArrayUsuarios* array, S_Postagem* postagem, unsigned int id_a
 {
     int id_comentario = -1, posicao_comentario = -1;
 
-    printf(">> ID do comentario a ser apagado: ");
+    printf("ID do comentario a ser apagado: ");
     scanf("%d", &id_comentario);
     getchar();
 
     posicao_comentario = Achar_Posicao_DoComentario(&postagem->Comentarios, id_comentario);
     if(posicao_comentario < 0)
     {
-        printf(">>>> Este Comentario nao existe! <<<<\n");
+        printf("Este comentario nao existe!\n");
         return;
     }
     if(Verifica_Autoria(&postagem->Comentarios.dados_Comentario[posicao_comentario], id_autor) == false)
     {
-        printf(">>>> Este Comentario pertence a outro usuario! <<<<\n");
+        printf("Este Comentario pertence a outro usuario!\n");
         return;
     }
     S_Comentario* Comentario = &postagem->Comentarios.dados_Comentario[posicao_comentario];
@@ -1090,6 +1099,7 @@ void Descomentar(S_ArrayUsuarios* array, S_Postagem* postagem, unsigned int id_a
     Remove_Id_Do_Vetor(&Usuario->PostagensComentadas, Comentario->Id);
 
     Apagar_Comentario(&postagem->Comentarios, posicao_comentario);
+
     printf(">>> Postagem apagada! <<<\n");
 }
 
@@ -1127,7 +1137,7 @@ void Descurtir(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned i
     {
         if(postagem->QuemCurtiu.Id[i] == usuario_id) //se o id de uma curtida for igual a do usuario
         {
-            postagem->QuemCurtiu.Id[i] = postagem->QuemCurtiu.Id[postagem->QuemCurtiu.Quantidade-1]; //atribui o id anterior na posicao atual 
+            postagem->QuemCurtiu.Id[i] = postagem->QuemCurtiu.Id[postagem->QuemCurtiu.Quantidade-1]; //atribui o id da ultima
             Desalocar_Vetor_Id(&postagem->QuemCurtiu);
             
             S_Usuario* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, usuario_id); //procura o perfil do usuario que descurtiu
@@ -1253,18 +1263,21 @@ void Upload_Imagem(S_ArrayImagens* vetor_imagens)
     insta_imprimeImagem(vetor_imagens->Imagens[vetor_imagens->Quantidade-1]); //imprime a imagem
 }
 
-void Remover_Imagem_DoArray(S_ArrayImagens* array, unsigned int posicao)
+void Remover_Imagem_DoArray(S_ArrayImagens* vetor_imagens, unsigned int posicao)
 {
-    if(array->Quantidade == 0 || posicao < 0 || posicao > array->Quantidade - 1)
+    if(vetor_imagens->Quantidade == 0 || posicao < 0 || posicao > vetor_imagens->Quantidade - 1){
         return;
+    }
     
-    insta_liberaImagem(array->Imagens[posicao]);
-    for(int i = posicao; i < array->Quantidade - 1; i++)
-        array->Imagens[i] = array->Imagens[i + 1];
+    insta_liberaImagem(vetor_imagens->Imagens[posicao]);
+    for(int i = posicao; i < vetor_imagens->Quantidade - 1; i++){
+        vetor_imagens->Imagens[i] = vetor_imagens->Imagens[i + 1];
+    }
     
-    (array->Quantidade)--;
-    if(array->Quantidade == 0)
-        Liberar_Imagens(array);
+    (vetor_imagens->Quantidade)--;
+    if(vetor_imagens->Quantidade == 0){
+        Liberar_Imagens(vetor_imagens);
+    }
 }
 
 void Editar_Post(S_ArrayPostagens* postagens, S_Postagem* postagem)
@@ -1277,7 +1290,7 @@ void Editar_Post(S_ArrayPostagens* postagens, S_Postagem* postagem)
         printf("[3] Remover Imagem\n");
         printf("[0] Cancelar\n");
         
-        printf(">> ");
+        printf("Escolha: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -1286,23 +1299,23 @@ void Editar_Post(S_ArrayPostagens* postagens, S_Postagem* postagem)
             case 0:
                 return;
             case 1:
-                printf(">> Escreva uma descricao para seu postagem: ");
+                printf("Escreva uma descricao para seu postagem: ");
                 fgets(postagem->Descrit, TEXTO_TAM, stdin);
                 Retira_quebra_de_linha(postagem->Descrit);
-                printf(">> Descricao alterada com sucesso! <<\n");
                 break;
+
             case 2:
                 do
                 {
                     Upload_Imagem(&postagem->imagens_do_post);
-                    printf(">> Adicionar outra imagem? <1 para sim, 0 para nao>: \n");
+                    printf("Adicionar outra imagem? (1 - sim, 0 - nao): \n");
                 
                     scanf("%d", &opcao);
                     getchar();
                 } while (opcao != 0); 
                 break;
             case 3:
-                printf(">> Posicao da imagem: \n");
+                printf("Posicao da imagem: \n");
                 scanf("%d", &opcao);
 
                 Remover_Imagem_DoArray(&postagem->imagens_do_post, opcao-1);
@@ -1317,9 +1330,13 @@ void Apagar_Post(S_ArrayPostagens* postagens, unsigned int post_id, S_ArrayUsuar
     for(int i = 0; i < usuarios->Quantidade; i++)
     {
         S_Usuario* Usuario_Atual = &usuarios->Usuarios[i];
+
         int Posicao_Aux = Checar_Usuario_CurtiuPost(Usuario_Atual, post_id);
-        if(Posicao_Aux >= 0)
+
+        if(Posicao_Aux >= 0){
             Remove_Posicao_Vetor_Id(&Usuario_Atual->PostagensCurtidas, Posicao_Aux);
+        }
+        
         do
         {
             Posicao_Aux = Checar_Usuario_Comentou(Usuario_Atual, post_id);
@@ -1340,39 +1357,35 @@ void Apagar_Post(S_ArrayPostagens* postagens, unsigned int post_id, S_ArrayUsuar
     }
 }
 
-void Salvar_Imagens_NoArquivo( S_ArrayImagens* array, FILE* arquivo)
+void Salvar_Imagens_NoArquivo( S_ArrayImagens* vetor_imagens, FILE* arquivo)
 {
-    for(int i = 0; i < array->Quantidade; i++)
+    for(int i = 0; i < vetor_imagens->Quantidade; i++)
     {
-        fwrite(&array->Imagens[i]->nBytes, sizeof(int), 1, arquivo);
-        fwrite(array->Imagens[i]->bytes, sizeof(uint8_t), array->Imagens[i]->nBytes, arquivo);
+        fwrite(&vetor_imagens->Imagens[i]->nBytes, sizeof(int), 1, arquivo);
+        fwrite(vetor_imagens->Imagens[i]->bytes, sizeof(uint8_t), vetor_imagens->Imagens[i]->nBytes, arquivo);
     }
 }
 
-void SalvarArquivo_Postagens( S_ArrayPostagens* array, char* arquivo)
+void SalvarArquivo_Postagens( S_ArrayPostagens* vetor_postagens, char* arquivo)
 {
     FILE* Arquivo = fopen(arquivo, "wb");
+
     if(Arquivo == NULL)
     {
         printf("ERRO: Abertura de arquivo");
         return;
     }
     
-    fwrite(&(array->Quantidade), sizeof(unsigned int), 1, Arquivo);
-    fwrite(array->Postagens, sizeof(S_Postagem), array->Quantidade, Arquivo);
-    for(int i = 0; i < array->Quantidade; i++)
+    fwrite(&(vetor_postagens->Quantidade), sizeof(unsigned int), 1, Arquivo);
+    fwrite(vetor_postagens->Postagens, sizeof(S_Postagem), vetor_postagens->Quantidade, Arquivo);
+    for(int i = 0; i < vetor_postagens->Quantidade; i++)
     {
 
-        Salvar_Imagens_NoArquivo(&array->Postagens[i].imagens_do_post, Arquivo);
+        Salvar_Imagens_NoArquivo(&vetor_postagens->Postagens[i].imagens_do_post, Arquivo);
 
-        fwrite(array->Postagens[i].QuemCurtiu.Id,
-                sizeof(unsigned int),
-                array->Postagens[i].QuemCurtiu.Quantidade,
-                Arquivo);
-        fwrite(array->Postagens[i].Comentarios.dados_Comentario,
-                sizeof(S_Comentario),
-                array->Postagens[i].Comentarios.Quantidade,
-                Arquivo);
+        fwrite(vetor_postagens->Postagens[i].QuemCurtiu.Id, sizeof(unsigned int), vetor_postagens->Postagens[i].QuemCurtiu.Quantidade, Arquivo);
+
+        fwrite(vetor_postagens->Postagens[i].Comentarios.dados_Comentario, sizeof(S_Comentario), vetor_postagens->Postagens[i].Comentarios.Quantidade, Arquivo);
     }
     
     fclose(Arquivo);
@@ -1464,47 +1477,54 @@ S_ArrayComentarios Achar_Comentarios_DoUsuario( S_ArrayComentarios* array, unsig
 
 void Imprime_Comentario( S_Comentario* comentario,  S_ArrayUsuarios* usuarios)
 {
-    S_Usuario* Autor = Achar_Usuario_Pelo_Id(usuarios, comentario->Perfil_Id);
-    printf(">>> Comentario #%06u <<<\n", comentario->Id);
-    printf("Usuario %s #%06u comentou:\n", Autor->Nome, Autor->Id);
-    printf("> %s <\n", comentario->Mensagem);
+    S_Usuario* Autor = Achar_Usuario_Pelo_Id(usuarios, comentario->Perfil_Id); //recebe os dados do usuario que comentou
+
+    printf("Comentario #%06u\n", comentario->Id); //imprime o id da postagem
+
+    printf("Usuario %s #%06u comentou:\n", Autor->Nome, Autor->Id); //imprime quem comentou
+ 
+    printf("%s\n", comentario->Mensagem);//imprime o comentario propriamente dito
     return;
 }
 
-void Imprime_Comentarios( S_ArrayComentarios* array,  S_ArrayUsuarios* usuarios)
+void Imprime_Comentarios( S_ArrayComentarios* vetor_comentarios,  S_ArrayUsuarios* vetor_usuarios)
 {
-    if(array->Quantidade < 1)
-        printf(">>>> Nenhum Comentario Foi Feito Ainda<<<<\n");
+    if(vetor_comentarios->Quantidade < 1){ //se a quantidade de comentarios do vetor passado for menor que 1, significa que não ha nenhum comentario
+        printf("A postagem nao tem comentarios\n");
+    }
     else
     {
-        for(int i = 0; i < array->Quantidade; i++)
-            Imprime_Comentario(&array->dados_Comentario[i], usuarios);
+        for(int i = 0; i < vetor_comentarios->Quantidade; i++){ //percorre os comentarios imprimindo um por um
+            Imprime_Comentario(&vetor_comentarios->dados_Comentario[i], vetor_usuarios);
+        }
     }
     return;
 }
 
-bool Imprime_Comentarios_DoUsuario( S_ArrayComentarios* array,  S_ArrayUsuarios* usuarios, unsigned int id_usuario)
+bool Imprime_Comentarios_DoUsuario( S_ArrayComentarios* vetor_comentarios,  S_ArrayUsuarios* vetor_usuarios, unsigned int id_usuario)
 {
-    bool TemComentarios = false;
-    if(array->Quantidade < 1)
+    bool TemComentarios = false; //booleano que checa se existe comentario do usario logado no post
+
+    if(vetor_comentarios->Quantidade < 1) // se a quantidade de comentario for menor que 1 entao nao ha nenhum comentario na postagem
     {
-        printf(">>>> Nenhum Comentario Foi Feito Ainda<<<<\n");
+        printf("A postagem nao tem comentarios\n");
         return false;
     }
 
-    for(int i = 0; i < array->Quantidade; i++)
+    for(int i = 0; i < vetor_comentarios->Quantidade; i++) //percorre o vetor de comentarios
     {
-        S_Comentario* Comentario = &array->dados_Comentario[i];
-        if(Verifica_Autoria(Comentario, id_usuario) == true)
+        S_Comentario* Comentario = &vetor_comentarios->dados_Comentario[i]; //cria uma referencia ao comentario para nao ficar tao verbalizado a variavel
+
+        if(Verifica_Autoria(Comentario, id_usuario) == true) //verifica se foi o usuario que realizou o comentario
         {
-            Imprime_Comentario(Comentario, usuarios);
-            TemComentarios = true;
+            Imprime_Comentario(Comentario, vetor_usuarios);
+            TemComentarios = true; // se a autoria for verdadeira significa que existe psotagens desse user
         }
     }
     
-    if (TemComentarios == false)
+    if (TemComentarios == false) //se a variavel for false, siginifica que o usuario nao fez nenhuma postagem
     {
-        printf(">>>> Nenhum Comentario Foi Feito Por Este Usuario <<<<\n");
+        printf("Nenhum comentario foi feito nessa postagem\n");
         return false;
     }
     return true;
@@ -1534,7 +1554,7 @@ void Desaloca_Imagem(S_ArrayImagens* array)
 * Ela é do tipo 'int' porque caso o usuario peca para finalizar o programa ela retornara o valor 1, quebrando o loop do 'while'
 */
 
-void Imprimir_Comentarios(S_Postagem* postagem)
+void Imprimir_Comentarios(S_Postagem* postagem) //menu que tem as opcoes de impressao dos comentarios
 {
     int opcao = 0;
     unsigned int Id = 0;
@@ -1542,7 +1562,7 @@ void Imprimir_Comentarios(S_Postagem* postagem)
     printf("1 - Todos\n");
     printf("2 - Seus\n");
     printf("3 - Autor\n");
-    if(Usuario_Ativo->Id != Usuario_Logado->Id) //ver os comentarios de quem postou
+    if(Usuario_Ativo->Id != Usuario_Logado->Id) //ver somente os comentarios do usuario ativo
     {
         printf("4 - Usuario Ativo: %s #%06u\n", Usuario_Ativo->Nome, Usuario_Ativo->Id);
     }
@@ -1558,19 +1578,19 @@ void Imprimir_Comentarios(S_Postagem* postagem)
     case 0:
         break;
     case 1:
-        Imprime_Comentarios(&postagem->Comentarios, &Vetor_Usuarios);
+        Imprime_Comentarios(&postagem->Comentarios, &Vetor_Usuarios); //imprime todos os comentarios da postagem
         break;
     case 2:
-        Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Logado->Id);
+        Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Logado->Id); //imprime os comentarios do usuario logado
         break;
     case 3:
-        Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, postagem->Autor_Id);
+        Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, postagem->Autor_Id); //imprime os comentario do autor do post
         break;
     case 4:
-        Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Ativo->Id);
+        Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Ativo->Id); //imprime os comentarios do usaurio ativo
         break;
     case 5:
-        printf("Id do usuario: ");
+        printf("Id do usuario: "); //imprime os comentarios de um usuario especifico
         scanf("%u", &Id);
         getchar();
         Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Id);
@@ -1610,42 +1630,41 @@ void Menu_Postagem(S_Postagem* postagem)
             Curtir(&Vetor_Usuarios, postagem, Usuario_Logado->Id); //chamada da funcao que curte o post
             break;
         case 2:
-            Descurtir(&Vetor_Usuarios, postagem, Usuario_Logado->Id);
+            Descurtir(&Vetor_Usuarios, postagem, Usuario_Logado->Id); //fucao que descurte um post
             break;
         case 3:
-            Imprimir_Curtidas(&Vetor_Usuarios, postagem);
+            Imprimir_Curtidas(&Vetor_Usuarios, postagem); //mostra quem curtiu o post
             break;
         case 4:
-            Comentar(&Vetor_Usuarios, postagem, Usuario_Logado->Id);
+            Comentar(&Vetor_Usuarios, postagem, Usuario_Logado->Id); //usuario logado comenta no post
             break;
         case 5:
-            Imprimir_Comentarios(postagem);
+            Imprimir_Comentarios(postagem); //mostra os comentarios
+            break;
+        case 6:  //opcao que peremite editar um comentario feito
+            if(postagem->Autor_Id == Usuario_Logado->Id) //verifica se o usuario logado e o mesmo que realizou a postagem
+            {
+                Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Logado->Id);
+                Recomentar(postagem, Usuario_Logado->Id); //funcao que muda os comentarios feitos 
+            }
+            break;
+        case 7:
+            if(postagem->Autor_Id == Usuario_Logado->Id) //verifica se o usuario logado e o mesmo que realizou a postagem
+            {
+                Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Logado->Id);
+                Descomentar(&Vetor_Usuarios, postagem, Usuario_Logado->Id); 
+            }
             break;
         case 8:
             if(postagem->Autor_Id == Usuario_Logado->Id)
                 Editar_Post(&Vetor_Postagens, postagem);
             break;
-        case 7:
-            if(postagem->Autor_Id == Usuario_Logado->Id)
-            {
-                Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Logado->Id);
-                Descomentar(&Vetor_Usuarios, postagem, Usuario_Logado->Id);
-            }
-            break;
         case 9:
             if(postagem->Autor_Id == Usuario_Logado->Id)
             {
                 Apagar_Post(&Vetor_Postagens, postagem->Id, &Vetor_Usuarios);
-                printf(">>> Postagem apagada! <<<\n");
             }
             return;
-        case 6:
-            if(postagem->Autor_Id == Usuario_Logado->Id)
-            {
-                Imprime_Comentarios_DoUsuario(&postagem->Comentarios, &Vetor_Usuarios, Usuario_Logado->Id);
-                Recomentar(postagem, Usuario_Logado->Id);
-            }
-            break;
         }
     } while (1);
 }
@@ -1669,25 +1688,31 @@ void Mostrar_Postagens_EmMenu(S_ArrayPostagens* array)
     int opcao = 0, Indice_atual = 0;
     if(array->Quantidade < 1)
     {
-        printf(">>>> Este Perfil Nao Possui Nenhum postagem <<<<\n");
+        printf("Este perfil nao possui nenhum postagem\n");
         return;
     }
+
     do
     {
         S_Postagem* Postagem_Atual = &array->Postagens[Indice_atual];
         S_Usuario* Postagem_Autor = Achar_Usuario_Pelo_Id(&Vetor_Usuarios, Postagem_Atual->Autor_Id);
-        printf("<><><><><><><><><><><><><><><><><><><><><><><><>\n");
-        printf("> #%06u\n", Postagem_Atual->Id);
-        printf("> Postada por %s #%06u\n", Postagem_Autor->Nome, Postagem_Autor->Id);
+
+        printf("-------------------------------------------------\n");
+
+        printf("#%06u\n", Postagem_Atual->Id);
+
+        printf("Postada por %s #%06u\n", Postagem_Autor->Nome, Postagem_Autor->Id);
+
         printf("\"%.32s\"\n", Postagem_Atual->Descrit);
-        printf("<><><><><><><><><><><><><><><><><><><><><><><><>\n");
+
+        printf("-------------------------------------------------\n");
 
         printf("[1] Anterior\n");
         printf("[2] Proxima\n");
         printf("[3] Ver Mais\n");
         printf("[0] Cancelar\n");
 
-        printf(">> ");
+        printf("Escolha ");
         scanf("%d", &opcao);
         getchar();
 
@@ -1711,9 +1736,14 @@ void Mostrar_Postagens_EmMenu(S_ArrayPostagens* array)
 
 void Mostrar_Postagens_Curtidas()
 {
-    S_ArrayPostagens Curtidas = {0, NULL};
-    for(int i = 0; i < Usuario_Ativo->PostagensCurtidas.Quantidade; i++)
+    S_ArrayPostagens Curtidas;
+
+    Curtidas.Quantidade = 0;
+    Curtidas.Postagens =  NULL;
+
+    for(int i = 0; i < Usuario_Ativo->PostagensCurtidas.Quantidade; i++){
         Adicionar_Postagem_NoArray(&Curtidas, Achar_Postagem_Pelo_id(&Vetor_Postagens, Usuario_Ativo->PostagensCurtidas.Id[i]));
+    }
 
     Mostrar_Postagens_EmMenu(&Curtidas);
     Liberar_Postagens(&Curtidas);
@@ -1723,10 +1753,13 @@ void Mostrar_Postagens_Curtidas()
 void Mostrar_Tela_UsuarioAtivo()
 {
     S_ArrayPostagens Posts_DoUsuario = {0, NULL};
+
     do
     {
         int opcao = 0;
+
         Mostrar_Usuario(Usuario_Ativo);
+
         printf("[1] Ver Postagens Deste Perfil \n");
         printf("[2] Ver Postagens Curtidas Por Este Perfil\n");
         printf("[3] Estatisticas Do Perfil\n");
@@ -1762,6 +1795,7 @@ void Mostrar_Usuarios_EmMenu(S_ArrayUsuarios* array)
     do
     {
         S_Usuario* Usuario_atual = &array->Usuarios[Indice_atual];
+
         printf("> Id #%06u \n", Usuario_atual->Id);
         printf("> Nome: %s \n", Usuario_atual->Nome);
         printf("> Email: %s \n", Usuario_atual->Email);
@@ -1772,7 +1806,7 @@ void Mostrar_Usuarios_EmMenu(S_ArrayUsuarios* array)
         printf("[3] Ver Mais\n");
         printf("[0] Cancelar\n");
 
-        printf(">> ");
+        printf("Escolha: ");
         scanf("%d", &opcao);
         getchar();
 
@@ -1803,6 +1837,7 @@ void Mostrar_Configs_Usuario()
     do
     {
         Mostrar_Usuario(Usuario_Logado);
+
         printf("[1] Alterar Nome\n");
         printf("[2] Alterar Email\n");
         printf("[3] Alterar Senha\n");
@@ -1908,13 +1943,14 @@ void Menu_Principal()
             Mostrar_Postagens_Curtidas();
             break;
         case 6:
-            printf(">> Buscar por? <1 para nome, 2 para email, 0 cancelar>: ");
+            printf("Buscar por? (1 - nome, 2 - email, 0 - cancelar): ");
             
             scanf("%d", &opcao);
             getchar();
 
             if(opcao == 0) break;
-            printf(">> Escreva parte do %s: ", opcao == 1 ? "nome" : "email");
+
+            printf("Escreva parte do %s: ", opcao == 1 ? "nome" : "email");
             fgets(usuario_buscado, NOME_TAM, stdin);
             Retira_quebra_de_linha(usuario_buscado);
 
@@ -1923,7 +1959,7 @@ void Menu_Principal()
 
             if(resultado_usuarios_busca.Quantidade == 0)
             {
-                printf(">>>> Usuario nao encontrado! <<<<\n");
+                printf("Usuario nao encontrado! \n");
             }
             else Mostrar_Usuarios_EmMenu(&resultado_usuarios_busca);
             Free_Usuarios(&resultado_usuarios_busca);
@@ -1980,9 +2016,9 @@ int Menu_Inicial()
             break;
         case 3:
             //pede para informar de que modo a listagem ficara organizada
-            printf("[1] Por Nome\n");
-            printf("[2] Por Email\n");
-            printf("[0] Por Id\n");
+            printf("1 - Por Nome\n");
+            printf("2 - Por Email\n");
+            printf("0 - Por Id\n");
             
             scanf("%d", &opcao);
             getchar();
