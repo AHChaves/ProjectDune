@@ -58,26 +58,27 @@
  */
 
 //STRUCTS
-typedef struct
+typedef struct comentarios_t
 {
     unsigned int Id;
     unsigned int Perfil_Id;
     unsigned int Postagem_Id;
     char Mensagem[TEXTO_TAM];
-} S_Comentario;
+} comentario_s;
 
-typedef struct 
+typedef struct vetor_comentarios_t
 {
     unsigned int Quantidade;
-    S_Comentario *dados_Comentario;
-} S_ArrayComentarios;
-typedef struct 
+    comentario_s *dadocomentario_s;
+} vetor_comentarios_s;
+
+typedef struct vetor_Id_t
 {
     unsigned int Quantidade;
     unsigned int *Id;
-} Array_Id_t;
+} vetor_Id_s;
 
-typedef struct
+typedef struct usuario_t
 {
     unsigned int Id;
     char Nome[NOME_TAM];
@@ -85,15 +86,15 @@ typedef struct
     char Senha[SENHA_TAM];
     char Bio[NOME_TAM];
 
-    Array_Id_t PostagensCurtidas;
-    Array_Id_t PostagensComentadas;
-} S_Usuario;
+    vetor_Id_s PostagensCurtidas;
+    vetor_Id_s PostagensComentadas;
+} usuario_s;
 
-typedef struct
+typedef struct vetor_usuarios_t
 {
-    S_Usuario* Usuarios;
+    usuario_s* Usuarios;
     unsigned int Quantidade;
-} S_ArrayUsuarios;
+} vetor_usuarios_s;
 
 struct asciiImg_s
 {
@@ -103,45 +104,45 @@ struct asciiImg_s
 
 /// Tipo "Imagem ASCII"
 typedef struct asciiImg_s asciiImg_t;
-typedef struct 
+typedef struct vetor_imagens_t
 {
     unsigned int Quantidade;
     asciiImg_t** Imagens;
-} S_ArrayImagens;
+} vetor_imagens_s;
 
-typedef struct
+typedef struct postagens_t
 {
     unsigned int Id;
     unsigned int Autor_Id;
     char Descrit[TEXTO_TAM];
-    S_ArrayImagens imagens_do_post;
+    vetor_imagens_s imagens_do_post;
     
-    Array_Id_t QuemCurtiu;
-    S_ArrayComentarios Comentarios;
-} S_Postagem;
+    vetor_Id_s QuemCurtiu;
+    vetor_comentarios_s Comentarios;
+} postagens_s;
 
-typedef struct 
+typedef struct vetor_postagens_t
 {
     unsigned int Quantidade;
-    S_Postagem* Postagens;
-} S_ArrayPostagens;
+    postagens_s* Postagens;
+} vetor_postagens_s;
 
 //COISAS FEIAS
 /*
-extern S_ArrayUsuarios Usuarios;
-extern S_ArrayPostagens Postagens;
-extern S_Usuario* Usuario_Logado;
-extern S_Usuario* Usuario_Ativo;
+extern vetor_usuarios_s Usuarios;
+extern vetor_postagens_s Postagens;
+extern usuario_s* Usuario_Logado;
+extern usuario_s* Usuario_Ativo;
 */
 
-S_ArrayUsuarios Vetor_Usuarios; //= (S_ArrayUsuarios) {0, NULL};
-S_ArrayPostagens Vetor_Postagens;
-S_Usuario* Usuario_Logado = NULL;
-S_Usuario* Usuario_Ativo = NULL;
+vetor_usuarios_s Vetor_Usuarios; //= (vetor_usuarios_s) {0, NULL};
+vetor_postagens_s Vetor_Postagens;
+usuario_s* Usuario_Logado = NULL;
+usuario_s* Usuario_Ativo = NULL;
 
 //FUNCOES GERAIS
 
-void Liberar_Vetor_Id(Array_Id_t* vetor)
+void Liberar_Vetor_Id(vetor_Id_s* vetor)
 {
     if(vetor->Id != NULL) { //se o vetor de Id for diferente de nulo, libera ele da memoria
         free(vetor->Id);
@@ -201,25 +202,25 @@ bool Compara_Frases(char* frase1, char* frase2) //funcao que compara 2 textos pa
     else return false;
 }
 
-void Alocar_Dinamicamente_Comentario(S_ArrayComentarios* vetor_comentarios)
+void Alocar_Dinamicamente_Comentario(vetor_comentarios_s* vetor_comentarios)
 {
     (vetor_comentarios->Quantidade)++; //aumenta a quantidade/tamnho do vetor
 
     if(vetor_comentarios->Quantidade == 1){ //se quantidade for 1, incializa o vetor com 1 de tamnho
-        vetor_comentarios->dados_Comentario = (S_Comentario *) malloc(sizeof(S_Comentario));
+        vetor_comentarios->dadocomentario_s = (comentario_s *) malloc(sizeof(comentario_s));
     }
     else{ //se for maior que 1, aumenta o tamnho do vetor com base em quantidade
-        vetor_comentarios->dados_Comentario = (S_Comentario *) realloc(vetor_comentarios->dados_Comentario, vetor_comentarios->Quantidade * sizeof(S_Comentario));
+        vetor_comentarios->dadocomentario_s = (comentario_s *) realloc(vetor_comentarios->dadocomentario_s, vetor_comentarios->Quantidade * sizeof(comentario_s));
     }
 
     //se o vetor for nulo, houve um erro na alocacao
-    if(vetor_comentarios->dados_Comentario == NULL){
+    if(vetor_comentarios->dadocomentario_s == NULL){
         printf("Erro na alocagem de comentario!!");    
     }
     return;
 }
 
-void Aloca_Imagem_Dinamicamente(S_ArrayImagens* vetor_imagem)
+void Aloca_Imagem_Dinamicamente(vetor_imagens_s* vetor_imagem)
 {
     (vetor_imagem->Quantidade)++; //aumenta a quantidade de imagens no vetor
 
@@ -237,7 +238,7 @@ void Aloca_Imagem_Dinamicamente(S_ArrayImagens* vetor_imagem)
     return;
 }
 
-void Alocar_ArrayId(Array_Id_t* vetor)
+void Alocar_ArrayId(vetor_Id_s* vetor)
 {
     (vetor->Quantidade)++; //aumenta a quantidade do vetor
 
@@ -255,14 +256,14 @@ void Alocar_ArrayId(Array_Id_t* vetor)
     return;
 }
 
-void Alocar_Vetor_Id_Com_Valor(Array_Id_t* vetor, unsigned int novo_valor)
+void Alocar_Vetor_Id_Com_Valor(vetor_Id_s* vetor, unsigned int novo_valor)
 {
     Alocar_ArrayId(vetor); //aloca o vetor recebido
     vetor->Id[vetor->Quantidade-1] = novo_valor; //atribui um valor ao Id
     return;
 }
 
-void Desalocar_Vetor_Id(Array_Id_t* vetor_Id)
+void Desalocar_Vetor_Id(vetor_Id_s* vetor_Id)
 {
     if(vetor_Id->Quantidade == 0){ //se o tamanho do vetor for 0, sai da funcao
         return;
@@ -284,13 +285,13 @@ void Desalocar_Vetor_Id(Array_Id_t* vetor_Id)
     return;
 }
 
-void Remove_Posicao_Vetor_Id(Array_Id_t* vetor_Id, int posicao)
+void Remove_Posicao_Vetor_Id(vetor_Id_s* vetor_Id, int posicao)
 {
     vetor_Id->Id[posicao] = vetor_Id->Id[vetor_Id->Quantidade-1]; //atribui o valor da posicao anterior na posicao atual
     Desalocar_Vetor_Id(vetor_Id); //retira da memoria o valor
 }
 
-void Remove_Id_Do_Vetor(Array_Id_t* vetor_Id, unsigned int id_informado)
+void Remove_Id_Do_Vetor(vetor_Id_s* vetor_Id, unsigned int id_informado)
 {
     for(int i = 0; i < vetor_Id->Quantidade; i++) //percorre o vetor
     {
@@ -304,15 +305,15 @@ void Remove_Id_Do_Vetor(Array_Id_t* vetor_Id, unsigned int id_informado)
 //CADASTRO
 
 //Funcao que alocadinamicamente um usuario
-void Alocar_Usuario_Dinamicamente(S_ArrayUsuarios* usuario)
+void Alocar_Usuario_Dinamicamente(vetor_usuarios_s* usuario)
 {
     (usuario->Quantidade)++; //aumenta quantos usuarios tem.
 
     if(usuario->Quantidade == 1){// se não foi inicializado, aloca dinamicamente com malloc 
-        usuario->Usuarios = (S_Usuario *) malloc(sizeof(S_Usuario));
+        usuario->Usuarios = (usuario_s *) malloc(sizeof(usuario_s));
     } 
     else{
-        usuario->Usuarios = (S_Usuario *) realloc(usuario->Usuarios, usuario->Quantidade * sizeof(S_Usuario));
+        usuario->Usuarios = (usuario_s *) realloc(usuario->Usuarios, usuario->Quantidade * sizeof(usuario_s));
     }//caso tenha um (1) usuario realoca o tamanho do vetor de usuario pra um tamanho maior
 
     //Se a alocacao falhar imprime uma mensagem de erro
@@ -322,7 +323,7 @@ void Alocar_Usuario_Dinamicamente(S_ArrayUsuarios* usuario)
     return;
 }
 
-bool Verifica_Email_Ja_Usado( S_ArrayUsuarios* vetor_usaurios,  char* email)
+bool Verifica_Email_Ja_Usado( vetor_usuarios_s* vetor_usaurios,  char* email)
 {
     for(int i = 0; i < vetor_usaurios->Quantidade - 1; i++)
     {
@@ -355,11 +356,11 @@ bool Verifica_Email_Valido( char* email)
     return false;
 }
 
-void Cadastrar_NovoUsuario(S_ArrayUsuarios* novo_Usuario)
+void Cadastrar_NovoUsuario(vetor_usuarios_s* novo_Usuario)
 {
     Alocar_Usuario_Dinamicamente(novo_Usuario); //aloca o novo usaurio de maneiro dinamica
 
-    S_Usuario* UsuarioNovo = &(novo_Usuario->Usuarios[novo_Usuario->Quantidade - 1]); //atribui a referencia da memoria do que esta apos a igualdade na variavel
+    usuario_s* UsuarioNovo = &(novo_Usuario->Usuarios[novo_Usuario->Quantidade - 1]); //atribui a referencia da memoria do que esta apos a igualdade na variavel
     UsuarioNovo->Id = novo_Usuario->Quantidade;
 
     //inicializa os valores
@@ -400,7 +401,7 @@ void Cadastrar_NovoUsuario(S_ArrayUsuarios* novo_Usuario)
 
 }
 
-void Free_Usuarios(S_ArrayUsuarios* vetor_usuarios)
+void Free_Usuarios(vetor_usuarios_s* vetor_usuarios)
 {
     if(vetor_usuarios->Usuarios != NULL){ //se o vetor de usuario for diferente de nulo, libera ele da memoria
         free(vetor_usuarios->Usuarios);
@@ -410,7 +411,7 @@ void Free_Usuarios(S_ArrayUsuarios* vetor_usuarios)
     return;
 }
 
-void Liberar_Usuarios_Profundo(S_ArrayUsuarios* array)
+void Liberar_Usuarios_Profundo(vetor_usuarios_s* array)
 {
     for(int i = 0; i < array->Quantidade; i++)
     {
@@ -429,13 +430,13 @@ void Liberar_Usuarios_Profundo(S_ArrayUsuarios* array)
 }
 
 
-void Adicionar_Usuario_No_Vetor(S_ArrayUsuarios* vetor_usuarios, S_Usuario* novo_usuario)
+void Adicionar_Usuario_No_Vetor(vetor_usuarios_s* vetor_usuarios, usuario_s* novo_usuario)
 {
     Alocar_Usuario_Dinamicamente(vetor_usuarios); //aloca um novo tamanho no vetor de usuarios
     vetor_usuarios->Usuarios[vetor_usuarios->Quantidade-1] = *novo_usuario; //grava a informacao recebida do novo usuario na ultima posicao do vetor
 }
 
-S_Usuario* Achar_Usuario_PorEmail(S_ArrayUsuarios* array, char* email)
+usuario_s* Achar_Usuario_PorEmail(vetor_usuarios_s* array, char* email)
 {
     for(int i = 0; i < array->Quantidade; i++) //percorre o vetor de usuarios
     {
@@ -446,7 +447,7 @@ S_Usuario* Achar_Usuario_PorEmail(S_ArrayUsuarios* array, char* email)
 }
 
 
-S_Usuario* Achar_Usuario_Pelo_Id( S_ArrayUsuarios* array, unsigned int id)
+usuario_s* Achar_Usuario_Pelo_Id( vetor_usuarios_s* array, unsigned int id)
 {
     for(int i = 0; i < array->Quantidade; i++) //percorre o vetor de usuarios
     {
@@ -458,12 +459,12 @@ S_Usuario* Achar_Usuario_Pelo_Id( S_ArrayUsuarios* array, unsigned int id)
 
 
 //Funcao que loga o usuario
-S_Usuario* Logar_Usuario( S_ArrayUsuarios* array)
+usuario_s* Logar_Usuario( vetor_usuarios_s* array)
 {
     int escolha = 0;
     char email[NOME_TAM];
     char senha[SENHA_TAM];
-    S_Usuario* usuario_encontrado;
+    usuario_s* usuario_encontrado;
 
     do
     {
@@ -525,12 +526,12 @@ S_Usuario* Logar_Usuario( S_ArrayUsuarios* array)
     } while (1);
 }
 
-void Deslogar_Usuario(S_Usuario** usuario)
+void Deslogar_Usuario(usuario_s** usuario)
 {
     *usuario = NULL; //usuario recebido na chamada da funcao se torna nulo
 }
 
-void Alterar_Senha_Usuario(S_Usuario* usuario)
+void Alterar_Senha_Usuario(usuario_s* usuario)
 {
     char Senha_Antiga[SENHA_TAM];
     char Senha_Nova[SENHA_TAM];
@@ -554,7 +555,7 @@ void Alterar_Senha_Usuario(S_Usuario* usuario)
     return;
 }
 
-void Alterar_Nome_Usuario(S_Usuario* usuario)
+void Alterar_Nome_Usuario(usuario_s* usuario)
 {
     printf("Digite o novo nome: ");
     fgets(usuario->Nome, NOME_TAM, stdin);
@@ -563,7 +564,7 @@ void Alterar_Nome_Usuario(S_Usuario* usuario)
     return;
 }
 
-void Alterar_Email_Usuario(S_Usuario* usuario)
+void Alterar_Email_Usuario(usuario_s* usuario)
 {
     char Senha_Confirma[SENHA_TAM];
     
@@ -584,7 +585,7 @@ void Alterar_Email_Usuario(S_Usuario* usuario)
     return;
 }
 
-void Alterar_Bio_Usuario(S_Usuario* usuario)
+void Alterar_Bio_Usuario(usuario_s* usuario)
 {
     printf("Escreva uma breve descricao sua: ");
     fgets(usuario->Bio, NOME_TAM, stdin);
@@ -593,7 +594,7 @@ void Alterar_Bio_Usuario(S_Usuario* usuario)
     return;
 }
 
-int Checar_Usuario_CurtiuPost( S_Usuario* usuario, unsigned int post_id)
+int Checar_Usuario_CurtiuPost( usuario_s* usuario, unsigned int post_id)
 {
     for(int i = 0; i < usuario->PostagensCurtidas.Quantidade; i++)
     {
@@ -604,7 +605,7 @@ int Checar_Usuario_CurtiuPost( S_Usuario* usuario, unsigned int post_id)
     return -1; // retorna -1 se o usuario informado nao curtiu o post
 }
 
-int Checar_Usuario_Comentou( S_Usuario* usuario, unsigned int post_id)
+int Checar_Usuario_Comentou( usuario_s* usuario, unsigned int post_id)
 {
     for(int i = 0; i < usuario->PostagensComentadas.Quantidade; i++)
     {
@@ -615,7 +616,7 @@ int Checar_Usuario_Comentou( S_Usuario* usuario, unsigned int post_id)
     return -1; //se nao, retorna -1
 }
 
-void Mostrar_Usuario( S_Usuario* usuario) //Mostra os dados do usuario
+void Mostrar_Usuario( usuario_s* usuario) //Mostra os dados do usuario
 {
     printf("Usuario #%06u <<<\n", usuario->Id);
     printf("Nome: %s \n", usuario->Nome);
@@ -623,12 +624,12 @@ void Mostrar_Usuario( S_Usuario* usuario) //Mostra os dados do usuario
     printf("Bio: %s \n", usuario->Bio);
 }
 
-void Imprime_Usuario_Em_Formato_Tabela(S_Usuario* usuario)
+void Imprime_Usuario_Em_Formato_Tabela(usuario_s* usuario)
 {
     printf("| %-50u | %-50s |%-50s | %-50s |\n", usuario->Id, usuario->Nome, usuario->Email, usuario->Bio);
 }
 
-void Imprime_Usuarios(S_ArrayUsuarios* vetor_usuarios)
+void Imprime_Usuarios(vetor_usuarios_s* vetor_usuarios)
 {
     if(vetor_usuarios->Quantidade == 0) //se a quantidade for 0, sai da funcao, pois na ha nenhum usuario no vetor
     {
@@ -643,7 +644,7 @@ void Imprime_Usuarios(S_ArrayUsuarios* vetor_usuarios)
     }
 }
 
-void SalvarArquivo_Usuarios( S_ArrayUsuarios* vetor_usuarios, char* arquivo)
+void SalvarArquivo_Usuarios( vetor_usuarios_s* vetor_usuarios, char* arquivo)
 {
     FILE* Arquivo = fopen(arquivo, "wb");
     if(Arquivo == NULL)
@@ -654,7 +655,7 @@ void SalvarArquivo_Usuarios( S_ArrayUsuarios* vetor_usuarios, char* arquivo)
     
     fwrite(&(vetor_usuarios->Quantidade), sizeof(unsigned int), 1, Arquivo);// salva quantos usuarios sao
 
-    fwrite(vetor_usuarios->Usuarios, sizeof(S_Usuario), vetor_usuarios->Quantidade, Arquivo); //salva os dados do usuario
+    fwrite(vetor_usuarios->Usuarios, sizeof(usuario_s), vetor_usuarios->Quantidade, Arquivo); //salva os dados do usuario
     
     for(int i = 0; i < vetor_usuarios->Quantidade; i++)
     {
@@ -668,7 +669,7 @@ void SalvarArquivo_Usuarios( S_ArrayUsuarios* vetor_usuarios, char* arquivo)
 }
 
 //Pega os dados do arquivo de usuarios
-void CarregarArquivo_Usuarios(S_ArrayUsuarios* vetor_Usuarios, char* arquivo)
+void CarregarArquivo_Usuarios(vetor_usuarios_s* vetor_Usuarios, char* arquivo)
 {
     FILE* arquivo_usuarios = fopen(arquivo, "rb"); //abre o arquivo na forma de leitura
 
@@ -680,13 +681,13 @@ void CarregarArquivo_Usuarios(S_ArrayUsuarios* vetor_Usuarios, char* arquivo)
     
     fread(&(vetor_Usuarios->Quantidade), sizeof(unsigned int), 1, arquivo_usuarios); //le quantos usuarios existem
     
-    vetor_Usuarios->Usuarios = (S_Usuario*) malloc(vetor_Usuarios->Quantidade * sizeof(S_Usuario)); //aloca dinamicamente o numero de usuarios
+    vetor_Usuarios->Usuarios = (usuario_s*) malloc(vetor_Usuarios->Quantidade * sizeof(usuario_s)); //aloca dinamicamente o numero de usuarios
     
-    fread(vetor_Usuarios->Usuarios, sizeof(S_Usuario), vetor_Usuarios->Quantidade, arquivo_usuarios); //Le os dados dos usuarios
+    fread(vetor_Usuarios->Usuarios, sizeof(usuario_s), vetor_Usuarios->Quantidade, arquivo_usuarios); //Le os dados dos usuarios
     
     for(int i = 0; i < vetor_Usuarios->Quantidade; i++) //for que vai percorrer o vetor de usuarios
     {
-        S_Usuario* Usuario = &vetor_Usuarios->Usuarios[i]; //variavel de usuarios que vai receber o endereço de 'array->Usuarios[i]' para n precisar ficar digitando tudo isso a todo momento
+        usuario_s* Usuario = &vetor_Usuarios->Usuarios[i]; //variavel de usuarios que vai receber o endereço de 'array->Usuarios[i]' para n precisar ficar digitando tudo isso a todo momento
 
         Usuario->PostagensCurtidas.Id = (unsigned int *) malloc(Usuario->PostagensCurtidas.Quantidade * sizeof(unsigned int)); //aloca dinamicamente o vetor de 'Id' de curtidas
 
@@ -709,9 +710,9 @@ void CarregarArquivo_Usuarios(S_ArrayUsuarios* vetor_Usuarios, char* arquivo)
     return;
 }
 
-S_ArrayUsuarios Buscar_Usuarios_PorEmail( S_ArrayUsuarios* array, char* email)
+vetor_usuarios_s Buscar_Usuarios_PorEmail( vetor_usuarios_s* array, char* email)
 {
-    S_ArrayUsuarios Usuarios_Encontrados;
+    vetor_usuarios_s Usuarios_Encontrados;
 
     Usuarios_Encontrados.Quantidade = 0;
     Usuarios_Encontrados.Usuarios = NULL;
@@ -725,9 +726,9 @@ S_ArrayUsuarios Buscar_Usuarios_PorEmail( S_ArrayUsuarios* array, char* email)
     return Usuarios_Encontrados; //retorna o vetor
 }
 
-S_ArrayUsuarios Buscar_Usuarios_PorNome( S_ArrayUsuarios* vetor_usuarios, char* nome)
+vetor_usuarios_s Buscar_Usuarios_PorNome( vetor_usuarios_s* vetor_usuarios, char* nome)
 {
-    S_ArrayUsuarios Usuarios_Encontrados; //vetor que guarda os dados dos usuarios encontrados
+    vetor_usuarios_s Usuarios_Encontrados; //vetor que guarda os dados dos usuarios encontrados
 
     //inicializa os valores dele
     Usuarios_Encontrados.Quantidade = 0;
@@ -742,7 +743,7 @@ S_ArrayUsuarios Buscar_Usuarios_PorNome( S_ArrayUsuarios* vetor_usuarios, char* 
     return Usuarios_Encontrados; //retorna o vetor
 }
 
-bool Encontra_Usuario_NaLista( S_ArrayUsuarios* array, S_Usuario* usuario)
+bool Encontra_Usuario_NaLista( vetor_usuarios_s* array, usuario_s* usuario)
 {
     for(int i = 0; i < array->Quantidade; i++)
     {
@@ -752,11 +753,11 @@ bool Encontra_Usuario_NaLista( S_ArrayUsuarios* array, S_Usuario* usuario)
     return false;
 }
 
-void Ordenar_Usuarios(S_ArrayUsuarios* vetor_usuarios, int tipo_ordenacao)
+void Ordenar_Usuarios(vetor_usuarios_s* vetor_usuarios, int tipo_ordenacao)
 {
     for(int i = 0; i < vetor_usuarios->Quantidade; i++)
     {
-        S_Usuario usuario_temporario;
+        usuario_s usuario_temporario;
 
         bool Resultado_Cheque;
 
@@ -787,7 +788,7 @@ void Ordenar_Usuarios(S_ArrayUsuarios* vetor_usuarios, int tipo_ordenacao)
 
 //POSTAGEM
 
-unsigned int GerarId_Postagem( S_ArrayPostagens* vetor_postagens)
+unsigned int GerarId_Postagem( vetor_postagens_s* vetor_postagens)
 {
     unsigned int ultimo_id = 0;
 
@@ -801,15 +802,15 @@ unsigned int GerarId_Postagem( S_ArrayPostagens* vetor_postagens)
     return ultimo_id + 1; //retorna o valor do maior id do vetor de postagens +1 
 }
 
-void Aloca_Dinamicamente_Postagem(S_ArrayPostagens* vetor_postagem)
+void Aloca_Dinamicamente_Postagem(vetor_postagens_s* vetor_postagem)
 {
     (vetor_postagem->Quantidade)++; //soma quantos postagens tem no vetor
 
     if(vetor_postagem->Quantidade == 1){ // se a quantidade for igual a 1, inicializa o vetor com 1 de tamnho
-        vetor_postagem->Postagens = (S_Postagem *) malloc(sizeof(S_Postagem));
+        vetor_postagem->Postagens = (postagens_s *) malloc(sizeof(postagens_s));
     }
     else{
-        vetor_postagem->Postagens = (S_Postagem *) realloc(vetor_postagem->Postagens, vetor_postagem->Quantidade * sizeof(S_Postagem));
+        vetor_postagem->Postagens = (postagens_s *) realloc(vetor_postagem->Postagens, vetor_postagem->Quantidade * sizeof(postagens_s));
         //se tiver mais de 1 postagem realoca o numero delas para um maior
     } 
 
@@ -819,12 +820,12 @@ void Aloca_Dinamicamente_Postagem(S_ArrayPostagens* vetor_postagem)
     return;
 }
 
-void Liberar_Comentarios(S_ArrayComentarios* vetor_comentarios)
+void Liberar_Comentarios(vetor_comentarios_s* vetor_comentarios)
 {
-    if(vetor_comentarios->dados_Comentario != NULL){ //se for diferente de nulo, ou seja, se ha algum valor ainda no vetor, libera ele
-        free(vetor_comentarios->dados_Comentario);
+    if(vetor_comentarios->dadocomentario_s != NULL){ //se for diferente de nulo, ou seja, se ha algum valor ainda no vetor, libera ele
+        free(vetor_comentarios->dadocomentario_s);
     }
-    vetor_comentarios->dados_Comentario = NULL; //igual ele pra nulo
+    vetor_comentarios->dadocomentario_s = NULL; //igual ele pra nulo
     vetor_comentarios->Quantidade = 0; //e sua quantidade para zero
     return;
 }
@@ -835,7 +836,7 @@ void insta_liberaImagem(asciiImg_t *img)
     free(img);
 }
 
-void Liberar_Imagens(S_ArrayImagens* vetor_imagens)
+void Liberar_Imagens(vetor_imagens_s* vetor_imagens)
 {
     for(int i = 0; i < vetor_imagens->Quantidade; i++)// percorre o vetor de imagens liberando imagem por imagem
     {
@@ -850,7 +851,7 @@ void Liberar_Imagens(S_ArrayImagens* vetor_imagens)
     return;
 }
 
-void Liberar_Postagens_Completo(S_ArrayPostagens* vetor_postagens)
+void Liberar_Postagens_Completo(vetor_postagens_s* vetor_postagens)
 {
     for(int i = 0; i < vetor_postagens->Quantidade; i++) //libera todos os vetores que estao dentro de postagens primeiro
     {
@@ -869,7 +870,7 @@ void Liberar_Postagens_Completo(S_ArrayPostagens* vetor_postagens)
     return;
 }
 
-void Desalocar_Postagem(S_ArrayPostagens* vetor_postagens)
+void Desalocar_Postagem(vetor_postagens_s* vetor_postagens)
 {
     if(vetor_postagens->Quantidade == 0){ //se a quantidade for 0, não ha postagem
         return;
@@ -882,7 +883,7 @@ void Desalocar_Postagem(S_ArrayPostagens* vetor_postagens)
     }
     else //se tiver um valor maior que 0, realocamos o tamanho de psotagens para um menor, liberando a ultima posicao da memoria
     {
-        vetor_postagens->Postagens = (S_Postagem *) realloc(vetor_postagens->Postagens, vetor_postagens->Quantidade * sizeof(S_Postagem));
+        vetor_postagens->Postagens = (postagens_s *) realloc(vetor_postagens->Postagens, vetor_postagens->Quantidade * sizeof(postagens_s));
 
         //se ocorreu um erro na realocacao, imprime uma mesagem de erro
         if(vetor_postagens->Postagens == NULL){
@@ -892,7 +893,7 @@ void Desalocar_Postagem(S_ArrayPostagens* vetor_postagens)
     return;
 }
 
-void Liberar_Postagens(S_ArrayPostagens* array)
+void Liberar_Postagens(vetor_postagens_s* array)
 {
     if(array->Postagens == NULL)
         free(array->Postagens);
@@ -901,14 +902,14 @@ void Liberar_Postagens(S_ArrayPostagens* array)
     return;
 }
 
-void Adicionar_Postagem_NoArray(S_ArrayPostagens* vetor_postagens,  S_Postagem* postagem)
+void Adicionar_Postagem_NoArray(vetor_postagens_s* vetor_postagens,  postagens_s* postagem)
 {
     Aloca_Dinamicamente_Postagem(vetor_postagens);
     vetor_postagens->Postagens[vetor_postagens->Quantidade-1] = *postagem;
     return;
 }
 
-S_Postagem* Achar_Postagem_Pelo_id( S_ArrayPostagens* vetor_postagens, unsigned int postagem_id)
+postagens_s* Achar_Postagem_Pelo_id( vetor_postagens_s* vetor_postagens, unsigned int postagem_id)
 {
     for(int i = 0; i < vetor_postagens->Quantidade; i++) //percorre o vetor de postagens
     {
@@ -919,10 +920,10 @@ S_Postagem* Achar_Postagem_Pelo_id( S_ArrayPostagens* vetor_postagens, unsigned 
     return NULL; //se não retorna nulo
 }
 
-void Postar(S_ArrayPostagens* vetor_postagens, unsigned int id_usuario_ativo)
+void Postar(vetor_postagens_s* vetor_postagens, unsigned int id_usuario_ativo)
 {
     Aloca_Dinamicamente_Postagem(vetor_postagens); //aloca uma nova postagem no vetor
-    S_Postagem* postagem_nova = &vetor_postagens->Postagens[vetor_postagens->Quantidade - 1]; //passa a referencia da memoria a nova variavel para nao termos que escrever o nome original toda vez
+    postagens_s* postagem_nova = &vetor_postagens->Postagens[vetor_postagens->Quantidade - 1]; //passa a referencia da memoria a nova variavel para nao termos que escrever o nome original toda vez
 
     //inicializa os valores da nova postagem
     postagem_nova->Id = GerarId_Postagem(vetor_postagens); //recebe um id valido da funcao que gera
@@ -936,7 +937,7 @@ void Postar(S_ArrayPostagens* vetor_postagens, unsigned int id_usuario_ativo)
     postagem_nova->QuemCurtiu.Id = NULL;
 
     postagem_nova->Comentarios.Quantidade = 0;
-    postagem_nova->Comentarios.dados_Comentario = NULL;
+    postagem_nova->Comentarios.dadocomentario_s = NULL;
 
     //pede a descricao da postagem
     printf("informe a descricao da postagem: ");
@@ -949,9 +950,9 @@ void insta_imprimeImagem(asciiImg_t *img)
     printf("%s", img->bytes);
 }
 
-void VerPostagem( S_Postagem* postagem, S_ArrayUsuarios* vetor_usuarios)
+void VerPostagem( postagens_s* postagem, vetor_usuarios_s* vetor_usuarios)
 {
-    S_Usuario* autor = Achar_Usuario_Pelo_Id(vetor_usuarios, postagem->Autor_Id); //atribui os dados do autor da postagem a variavel
+    usuario_s* autor = Achar_Usuario_Pelo_Id(vetor_usuarios, postagem->Autor_Id); //atribui os dados do autor da postagem a variavel
    
     printf("POSTAGEM %06u\n", postagem->Id); //mostra o id da p
     printf("Autor: %s #%06u\n\n", autor->Nome, autor->Id);
@@ -967,9 +968,9 @@ void VerPostagem( S_Postagem* postagem, S_ArrayUsuarios* vetor_usuarios)
     printf("%s\n\n", postagem->Descrit);
 }
 
-S_ArrayPostagens Achar_Postagens_DoUsuario(S_ArrayPostagens* vetor_postagens, unsigned int id_usuario)
+vetor_postagens_s Achar_Postagens_DoUsuario(vetor_postagens_s* vetor_postagens, unsigned int id_usuario)
 {
-    S_ArrayPostagens Saida; //cria um array que ser retornado
+    vetor_postagens_s Saida; //cria um array que ser retornado
 
     //inicializa os dados desse arquivo
     Saida.Quantidade = 0;
@@ -984,25 +985,25 @@ S_ArrayPostagens Achar_Postagens_DoUsuario(S_ArrayPostagens* vetor_postagens, un
     return Saida;
 }
 
-unsigned int Gerar_Id_Comentario( S_ArrayComentarios* vetor_comentarios)
+unsigned int Gerar_Id_Comentario( vetor_comentarios_s* vetor_comentarios)
 {
     unsigned int ultimo_id = 0; //inicializa um valor pra variavel
 
     for(int i = 0; i < vetor_comentarios->Quantidade - 1; i++) //percorre o vetor de comentarios
     {
-        if(vetor_comentarios->dados_Comentario[i].Id > ultimo_id){ //se o id de um comentario for maior que 'ultimo_id', ele ganha esse valor
-            ultimo_id = vetor_comentarios->dados_Comentario[i].Id;
+        if(vetor_comentarios->dadocomentario_s[i].Id > ultimo_id){ //se o id de um comentario for maior que 'ultimo_id', ele ganha esse valor
+            ultimo_id = vetor_comentarios->dadocomentario_s[i].Id;
         }
     }
     return ultimo_id + 1; //devolve o valor de 'ultimo-id' + 1
 }
 
-void Cria_Comentario(S_ArrayComentarios* vetor_comentarios, unsigned int id_postagem, unsigned int id_usuario)
+void Cria_Comentario(vetor_comentarios_s* vetor_comentarios, unsigned int id_postagem, unsigned int id_usuario)
 {
     Alocar_Dinamicamente_Comentario(vetor_comentarios); //aloca o tamanho do vetor de comentarios do post
 
     //atribui uma referencia da memoria na nova variavel de comentario para n precisar escrever a antiga, que é maior toda vez.
-    S_Comentario* NovoComentario = &vetor_comentarios->dados_Comentario[vetor_comentarios->Quantidade - 1]; 
+    comentario_s* NovoComentario = &vetor_comentarios->dadocomentario_s[vetor_comentarios->Quantidade - 1]; 
 
     //inicializa os valores do novo comentario
     NovoComentario->Id = Gerar_Id_Comentario(vetor_comentarios); //recebe o id do comentario pelo retorno da funcao 'Gerar_Id_Comentario'
@@ -1017,32 +1018,32 @@ void Cria_Comentario(S_ArrayComentarios* vetor_comentarios, unsigned int id_post
     return;
 }
 
-void Comentar(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned int id_usuario)
+void Comentar(vetor_usuarios_s* vetor_usuarios, postagens_s* postagem, unsigned int id_usuario)
 {
     //chamada da funcao que cria um comentario
     Cria_Comentario(&postagem->Comentarios, postagem->Id, id_usuario); //funcao que cria o comentario de fato
 
-    S_Usuario* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, id_usuario); //acha o usuario que comentou pelo id dele
+    usuario_s* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, id_usuario); //acha o usuario que comentou pelo id dele
     Alocar_Vetor_Id_Com_Valor(&Usuario->PostagensComentadas, postagem->Id); //adiciona as suas informações em que post ele comentou e aumenta o numero de posts
 }
 
-S_Comentario* Achar_Comentario(S_ArrayComentarios* vetor_comentarios, int comentario_id)
+comentario_s* Achar_Comentario(vetor_comentarios_s* vetor_comentarios, int comentario_id)
 {
     for (int i = 0; i < vetor_comentarios->Quantidade; i++) //percorre o vetor de comentarios
     {
-        if(vetor_comentarios->dados_Comentario[i].Id == comentario_id){//se id do comentario no vetor for igual ao id informado. retorna os dados do comentario na posicao 'i'
-            return &vetor_comentarios->dados_Comentario[i];
+        if(vetor_comentarios->dadocomentario_s[i].Id == comentario_id){//se id do comentario no vetor for igual ao id informado. retorna os dados do comentario na posicao 'i'
+            return &vetor_comentarios->dadocomentario_s[i];
         }
     }
     return NULL; //se nao achar um comentario com o id informado, retorna nulo
 }
 
-bool Verifica_Autoria( S_Comentario* comentario, unsigned int id_usuario)
+bool Verifica_Autoria( comentario_s* comentario, unsigned int id_usuario)
 {
     return comentario->Perfil_Id == id_usuario; // verifica se o usaurio recebido foi o que realizou o comentario
 }
 
-void Editar_Comentario(S_Comentario* comentario)
+void Editar_Comentario(comentario_s* comentario)
 {
     printf("Edite o seu comentario: \n");
     fgets(comentario->Mensagem, TEXTO_TAM, stdin);
@@ -1052,7 +1053,7 @@ void Editar_Comentario(S_Comentario* comentario)
     return;
 }
 
-void Recomentar(S_Postagem* postagem, unsigned int id_autor)
+void Recomentar(postagens_s* postagem, unsigned int id_autor)
 {
     int comentario_id = -1; //inicializa o valor da variavel
 
@@ -1060,7 +1061,7 @@ void Recomentar(S_Postagem* postagem, unsigned int id_autor)
     scanf("%d", &comentario_id);
     getchar();
 
-    S_Comentario* Comentario = Achar_Comentario(&postagem->Comentarios, comentario_id); //funcao que acha o comentario que deve ser apagado e o retorna
+    comentario_s* Comentario = Achar_Comentario(&postagem->Comentarios, comentario_id); //funcao que acha o comentario que deve ser apagado e o retorna
 
     if(Comentario == NULL) //se comentario for nulo signiica que ele nao existe
     {
@@ -1076,18 +1077,18 @@ void Recomentar(S_Postagem* postagem, unsigned int id_autor)
     Editar_Comentario(Comentario); //chamada da fucao que edita um comentario
 }
 
-int Achar_Posicao_DoComentario(S_ArrayComentarios* vetor_comentarios, unsigned int id_comentario)
+int Achar_Posicao_DoComentario(vetor_comentarios_s* vetor_comentarios, unsigned int id_comentario)
 {
     for (int i = 0; i < vetor_comentarios->Quantidade; i++)
     {
-        if(vetor_comentarios->dados_Comentario[i].Id == id_comentario){
+        if(vetor_comentarios->dadocomentario_s[i].Id == id_comentario){
             return i; //retorna a posicao no vetor de comentarios
         }
     }
     return -1; //retorna -1 se nao foi possivel achar o id do comentario no vetor
 }
 
-void Desalocar_Comentario(S_ArrayComentarios* vetor_comentarios)
+void Desalocar_Comentario(vetor_comentarios_s* vetor_comentarios)
 {
     if(vetor_comentarios->Quantidade == 0){ //se a quantidade for igual a zero nao ha nada no vetor
         return;
@@ -1100,23 +1101,23 @@ void Desalocar_Comentario(S_ArrayComentarios* vetor_comentarios)
     }
     else
     { //se o tamanho e maior que 0, realocamos para um tamnho menor, para retuirar o ultimo elemento do vetor
-        vetor_comentarios->dados_Comentario = (S_Comentario *) realloc(vetor_comentarios->dados_Comentario, vetor_comentarios->Quantidade * sizeof(S_Comentario));
+        vetor_comentarios->dadocomentario_s = (comentario_s *) realloc(vetor_comentarios->dadocomentario_s, vetor_comentarios->Quantidade * sizeof(comentario_s));
 
         //se o vetor for nulo apos tudo isso, significa que houve um erro de alocacao
-        if(vetor_comentarios->dados_Comentario == NULL){
+        if(vetor_comentarios->dadocomentario_s == NULL){
             printf("Erro na desalocacao de comentario");    
         }
     }
     return;
 }
 
-void Apagar_Comentario(S_ArrayComentarios* vetor_comentario, int posicao_comentario)
+void Apagar_Comentario(vetor_comentarios_s* vetor_comentario, int posicao_comentario)
 {
-    vetor_comentario->dados_Comentario[posicao_comentario] = vetor_comentario->dados_Comentario[vetor_comentario->Quantidade - 1]; //iguala ao valor da ultima posicao
+    vetor_comentario->dadocomentario_s[posicao_comentario] = vetor_comentario->dadocomentario_s[vetor_comentario->Quantidade - 1]; //iguala ao valor da ultima posicao
     Desalocar_Comentario(vetor_comentario);
 }
 
-void Descomentar(S_ArrayUsuarios* vetor_usaurios, S_Postagem* postagem, unsigned int id_autor)
+void Descomentar(vetor_usuarios_s* vetor_usaurios, postagens_s* postagem, unsigned int id_autor)
 {
     int id_comentario = -1, posicao_comentario = -1; //incializa os valores das variaveis
 
@@ -1131,21 +1132,21 @@ void Descomentar(S_ArrayUsuarios* vetor_usaurios, S_Postagem* postagem, unsigned
         printf("Este comentario nao existe!\n");
         return;
     }
-    if(Verifica_Autoria(&postagem->Comentarios.dados_Comentario[posicao_comentario], id_autor) == false) //verifica se e o autor da postagem
+    if(Verifica_Autoria(&postagem->Comentarios.dadocomentario_s[posicao_comentario], id_autor) == false) //verifica se e o autor da postagem
     {
         printf("Este Comentario pertence a outro usuario!\n");
         return;
     }
 
-    S_Comentario* Comentario = &postagem->Comentarios.dados_Comentario[posicao_comentario]; //comentario recebe a referencia da memoria da variavel apos a igualdade
+    comentario_s* Comentario = &postagem->Comentarios.dadocomentario_s[posicao_comentario]; //comentario recebe a referencia da memoria da variavel apos a igualdade
 
-    S_Usuario* Usuario = Achar_Usuario_Pelo_Id(vetor_usaurios, Comentario->Perfil_Id); //remove do usaurio a postagem em que ele comentou
+    usuario_s* Usuario = Achar_Usuario_Pelo_Id(vetor_usaurios, Comentario->Perfil_Id); //remove do usaurio a postagem em que ele comentou
     Remove_Id_Do_Vetor(&Usuario->PostagensComentadas, Comentario->Id);
 
     Apagar_Comentario(&postagem->Comentarios, posicao_comentario);
 }
 
-bool Verifica_Situacao_Curtida( S_Postagem* postagem, unsigned int usuario_id)
+bool Verifica_Situacao_Curtida( postagens_s* postagem, unsigned int usuario_id)
 {
     for(int i = 0; i < postagem->QuemCurtiu.Quantidade; i++) //percorre o vetor de curtidas
     {
@@ -1156,7 +1157,7 @@ bool Verifica_Situacao_Curtida( S_Postagem* postagem, unsigned int usuario_id)
     return false; //se nao achar a cutida do usuario no vetor, significa que o post nao havia sido curtido
 }
 
-void Curtir(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned int usuario_id)
+void Curtir(vetor_usuarios_s* vetor_usuarios, postagens_s* postagem, unsigned int usuario_id)
 {
     if(Verifica_Situacao_Curtida(postagem, usuario_id) == true){ //se o usuario já curtiu a postagem sai da funcao
         return;
@@ -1164,12 +1165,12 @@ void Curtir(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned int 
 
     Alocar_Vetor_Id_Com_Valor(&postagem->QuemCurtiu, usuario_id); //guarda o nome do usuario que curtiu o post
     
-    S_Usuario* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, usuario_id); //acha o usuario que curtiu
+    usuario_s* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, usuario_id); //acha o usuario que curtiu
     Alocar_Vetor_Id_Com_Valor(&Usuario->PostagensCurtidas, postagem->Id); //aumenta o numero de curtidas realizadas por aquele usuario e o post em que ele curtiu
 
 }
 
-void Descurtir(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned int usuario_id)
+void Descurtir(vetor_usuarios_s* vetor_usuarios, postagens_s* postagem, unsigned int usuario_id)
 {
     if(Verifica_Situacao_Curtida(postagem, usuario_id) != true){ //verifica a situacao da curtida, se nao foi curtida pelo usuario sai da funcao
         return;
@@ -1182,7 +1183,7 @@ void Descurtir(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned i
             postagem->QuemCurtiu.Id[i] = postagem->QuemCurtiu.Id[postagem->QuemCurtiu.Quantidade-1]; //atribui o id da ultima
             Desalocar_Vetor_Id(&postagem->QuemCurtiu);
             
-            S_Usuario* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, usuario_id); //procura o perfil do usuario que descurtiu
+            usuario_s* Usuario = Achar_Usuario_Pelo_Id(vetor_usuarios, usuario_id); //procura o perfil do usuario que descurtiu
             Remove_Id_Do_Vetor(&Usuario->PostagensCurtidas, postagem->Id); //remove o id da postagem do vetor de postagens curtidas pelo usuario
             
             return;
@@ -1190,15 +1191,15 @@ void Descurtir(S_ArrayUsuarios* vetor_usuarios, S_Postagem* postagem, unsigned i
     } 
 }
 
-void Imprimir_Curtidas( S_ArrayUsuarios* vetor_usuarios,  S_Postagem* postagem)
+void Imprimir_Curtidas( vetor_usuarios_s* vetor_usuarios,  postagens_s* postagem)
 {
-    S_ArrayUsuarios vetor_usuarios_curtiram; //cria um vetor de usuarios que vai guardar quem curtiu o post
+    vetor_usuarios_s vetor_usuarios_curtiram; //cria um vetor de usuarios que vai guardar quem curtiu o post
 
     //incializa os valores desse vetor de usuarios
     vetor_usuarios_curtiram.Quantidade = 0;
     vetor_usuarios_curtiram.Usuarios = NULL;
 
-    S_Usuario* usuario_temporario; //cria um ponteiro de um usuario temporario, ele vai gardar temporariamente a informacoes de quem curtiu
+    usuario_s* usuario_temporario; //cria um ponteiro de um usuario temporario, ele vai gardar temporariamente a informacoes de quem curtiu
 
     for(int i = 0; i < postagem->QuemCurtiu.Quantidade; i++) //percorre o vetor de curtidas 
     {
@@ -1282,7 +1283,7 @@ asciiImg_t *insta_carregaImagem(char url[], bool colorido, int largura)
     return img;
 }
 
-void Upload_Imagem(S_ArrayImagens* vetor_imagens)
+void Upload_Imagem(vetor_imagens_s* vetor_imagens)
 {
     char Url[TEXTO_TAM];
     int ImagemColorida = true;
@@ -1304,7 +1305,7 @@ void Upload_Imagem(S_ArrayImagens* vetor_imagens)
     insta_imprimeImagem(vetor_imagens->Imagens[vetor_imagens->Quantidade-1]); //imprime a imagem
 }
 
-void Remover_Imagem_DoArray(S_ArrayImagens* vetor_imagens, unsigned int posicao){
+void Remover_Imagem_DoArray(vetor_imagens_s* vetor_imagens, unsigned int posicao){
     
     //se a quantidade de imagens for 0, ou a posicao informada for um numero negativo ou maior que a quantidade de postagens, sai da funcao
     if(vetor_imagens->Quantidade == 0 || posicao < 0 || posicao > vetor_imagens->Quantidade - 1){ 
@@ -1323,7 +1324,7 @@ void Remover_Imagem_DoArray(S_ArrayImagens* vetor_imagens, unsigned int posicao)
     }
 }
 
-void Editar_Post(S_ArrayPostagens* vetor_postagem, S_Postagem* postagem)
+void Editar_Post(vetor_postagens_s* vetor_postagem, postagens_s* postagem)
 {
     int opcao = 0;
     do
@@ -1370,11 +1371,11 @@ void Editar_Post(S_ArrayPostagens* vetor_postagem, S_Postagem* postagem)
     
 }
 
-void Apagar_Post(S_ArrayPostagens* vetor_postagens, unsigned int postagem_id, S_ArrayUsuarios* vetor_usuarios)
+void Apagar_Post(vetor_postagens_s* vetor_postagens, unsigned int postagem_id, vetor_usuarios_s* vetor_usuarios)
 {
     for(int i = 0; i < vetor_usuarios->Quantidade; i++) //percorre o vetor de usuarios
     {
-        S_Usuario* Usuario_Atual = &vetor_usuarios->Usuarios[i]; //atribui o endereco da memoria do que esta apos a igualdade a variavel
+        usuario_s* Usuario_Atual = &vetor_usuarios->Usuarios[i]; //atribui o endereco da memoria do que esta apos a igualdade a variavel
 
         int Posicao_Aux = Checar_Usuario_CurtiuPost(Usuario_Atual, postagem_id); //checa se o usuario curtiu o post e retorna o indice da curtida no vetor
 
@@ -1405,7 +1406,7 @@ void Apagar_Post(S_ArrayPostagens* vetor_postagens, unsigned int postagem_id, S_
     }
 }
 
-void Salvar_Imagens_NoArquivo( S_ArrayImagens* vetor_imagens, FILE* arquivo)
+void Salvar_Imagens_NoArquivo( vetor_imagens_s* vetor_imagens, FILE* arquivo)
 {
     for(int i = 0; i < vetor_imagens->Quantidade; i++) //percorre os vetor de imagens na postagem
     {
@@ -1414,7 +1415,7 @@ void Salvar_Imagens_NoArquivo( S_ArrayImagens* vetor_imagens, FILE* arquivo)
     }
 }
 
-void SalvarArquivo_Postagens( S_ArrayPostagens* vetor_postagens, char* arquivo)
+void SalvarArquivo_Postagens( vetor_postagens_s* vetor_postagens, char* arquivo)
 {
     FILE* Arquivo = fopen(arquivo, "wb");
 
@@ -1426,7 +1427,7 @@ void SalvarArquivo_Postagens( S_ArrayPostagens* vetor_postagens, char* arquivo)
     
     fwrite(&(vetor_postagens->Quantidade), sizeof(unsigned int), 1, Arquivo); //salva quantas postagens existem
 
-    fwrite(vetor_postagens->Postagens, sizeof(S_Postagem), vetor_postagens->Quantidade, Arquivo); //grava os dados das postagens
+    fwrite(vetor_postagens->Postagens, sizeof(postagens_s), vetor_postagens->Quantidade, Arquivo); //grava os dados das postagens
     for(int i = 0; i < vetor_postagens->Quantidade; i++) //percorre o vetor de postagens
     {
 
@@ -1434,14 +1435,14 @@ void SalvarArquivo_Postagens( S_ArrayPostagens* vetor_postagens, char* arquivo)
 
         fwrite(vetor_postagens->Postagens[i].QuemCurtiu.Id, sizeof(unsigned int), vetor_postagens->Postagens[i].QuemCurtiu.Quantidade, Arquivo); //salva quem curtiu a psotagem
 
-        fwrite(vetor_postagens->Postagens[i].Comentarios.dados_Comentario, sizeof(S_Comentario), vetor_postagens->Postagens[i].Comentarios.Quantidade, Arquivo); //salva quem comentou
+        fwrite(vetor_postagens->Postagens[i].Comentarios.dadocomentario_s, sizeof(comentario_s), vetor_postagens->Postagens[i].Comentarios.Quantidade, Arquivo); //salva quem comentou
     }
     
     fclose(Arquivo); //fecha o arquivo
     return;
 }
 
-void Carregar_Imagens_DoArquivo(S_ArrayImagens* vetor_imagens, FILE* arquivo)
+void Carregar_Imagens_DoArquivo(vetor_imagens_s* vetor_imagens, FILE* arquivo)
 {
     vetor_imagens->Imagens = (asciiImg_t **) malloc(vetor_imagens->Quantidade * sizeof(asciiImg_t*)); //aloca dinamicamente quantas imagens sao
 
@@ -1459,7 +1460,7 @@ void Carregar_Imagens_DoArquivo(S_ArrayImagens* vetor_imagens, FILE* arquivo)
     }
 }
 
-void CarregarArquivo_Postagens(S_ArrayPostagens* vetor_postagens, char* arquivo)
+void CarregarArquivo_Postagens(vetor_postagens_s* vetor_postagens, char* arquivo)
 {
     FILE* arquivo_postagens = fopen(arquivo, "rb"); //abre o arquivo de postagens
 
@@ -1470,15 +1471,15 @@ void CarregarArquivo_Postagens(S_ArrayPostagens* vetor_postagens, char* arquivo)
     }
     
     fread(&(vetor_postagens->Quantidade), sizeof(unsigned int), 1, arquivo_postagens); //Le quantos posts existem
-    vetor_postagens->Postagens = (S_Postagem*) malloc(vetor_postagens->Quantidade * sizeof(S_Postagem)); //aloca dinamicamente o vetor de postagens
+    vetor_postagens->Postagens = (postagens_s*) malloc(vetor_postagens->Quantidade * sizeof(postagens_s)); //aloca dinamicamente o vetor de postagens
     
-    fread(vetor_postagens->Postagens, sizeof(S_Postagem), vetor_postagens->Quantidade, arquivo_postagens);//le os dados das postagens
+    fread(vetor_postagens->Postagens, sizeof(postagens_s), vetor_postagens->Quantidade, arquivo_postagens);//le os dados das postagens
     
     for(int i = 0; i < vetor_postagens->Quantidade; i++) 
     {
         Carregar_Imagens_DoArquivo(&vetor_postagens->Postagens[i].imagens_do_post, arquivo_postagens); //chamada da funcao que carrega as imagens
         
-        Array_Id_t* id_Curtidas = &vetor_postagens->Postagens[i].QuemCurtiu; //atribui a referencia da memoria a 'id_Curtidas' para n precisar ficar escrevendo o nome de variavel gigantesco
+        vetor_Id_s* id_Curtidas = &vetor_postagens->Postagens[i].QuemCurtiu; //atribui a referencia da memoria a 'id_Curtidas' para n precisar ficar escrevendo o nome de variavel gigantesco
         id_Curtidas->Id = (unsigned int *) malloc(id_Curtidas->Quantidade * sizeof(unsigned int)); // aloca dinamicamente o vetor de 'Id'
 
         fread(vetor_postagens->Postagens[i].QuemCurtiu.Id, sizeof(unsigned int), vetor_postagens->Postagens[i].QuemCurtiu.Quantidade, arquivo_postagens); //Le do arquivo os ids de quem curtiu o post
@@ -1487,13 +1488,13 @@ void CarregarArquivo_Postagens(S_ArrayPostagens* vetor_postagens, char* arquivo)
             id_Curtidas->Id = NULL;
         }
         
-        S_ArrayComentarios* vetor_comentarios = &vetor_postagens->Postagens[i].Comentarios; //manda a referencia da memoria para a variavel de mesmo tipo, para n precisar ficar digitando um nome de variavel gigantesco
-        vetor_comentarios->dados_Comentario = (S_Comentario *) malloc(vetor_comentarios->Quantidade * sizeof(S_Comentario)); // aloca dinamicamente o vetor de comentarios
+        vetor_comentarios_s* vetor_comentarios = &vetor_postagens->Postagens[i].Comentarios; //manda a referencia da memoria para a variavel de mesmo tipo, para n precisar ficar digitando um nome de variavel gigantesco
+        vetor_comentarios->dadocomentario_s = (comentario_s *) malloc(vetor_comentarios->Quantidade * sizeof(comentario_s)); // aloca dinamicamente o vetor de comentarios
   
-        fread(vetor_postagens->Postagens[i].Comentarios.dados_Comentario, sizeof(S_Comentario), vetor_postagens->Postagens[i].Comentarios.Quantidade, arquivo_postagens); //le os dao
+        fread(vetor_postagens->Postagens[i].Comentarios.dadocomentario_s, sizeof(comentario_s), vetor_postagens->Postagens[i].Comentarios.Quantidade, arquivo_postagens); //le os dao
 
         if(vetor_comentarios->Quantidade == 0){ //Se não houver comentarios, muda o valor alocado para nulo
-            vetor_comentarios->dados_Comentario = NULL;
+            vetor_comentarios->dadocomentario_s = NULL;
         }
     }
     
@@ -1503,20 +1504,20 @@ void CarregarArquivo_Postagens(S_ArrayPostagens* vetor_postagens, char* arquivo)
 
 //COMENTARIO
 
-void Adicionar_Comentario_NoArray(S_ArrayComentarios* array,  S_Comentario* comentario)
+void Adicionar_Comentario_NoArray(vetor_comentarios_s* array,  comentario_s* comentario)
 {
     Alocar_Dinamicamente_Comentario(array);
-    array->dados_Comentario[array->Quantidade-1] = *comentario;
+    array->dadocomentario_s[array->Quantidade-1] = *comentario;
     return;
 }
 
-S_ArrayComentarios Achar_Comentarios_DoUsuario( S_ArrayComentarios* array, unsigned int id_usuario)
+vetor_comentarios_s Achar_Comentarios_DoUsuario( vetor_comentarios_s* array, unsigned int id_usuario)
 {
-    S_ArrayComentarios Saida = {0, NULL};
+    vetor_comentarios_s Saida = {0, NULL};
 
     for(int i = 0; i < array->Quantidade; i++)
     {
-        S_Comentario* Comentario = &array->dados_Comentario[i];
+        comentario_s* Comentario = &array->dadocomentario_s[i];
         if(Verifica_Autoria(Comentario, id_usuario) == true)
             Adicionar_Comentario_NoArray(&Saida, Comentario);
     }
@@ -1524,9 +1525,9 @@ S_ArrayComentarios Achar_Comentarios_DoUsuario( S_ArrayComentarios* array, unsig
     return Saida;
 }
 
-void Imprime_Comentario( S_Comentario* comentario,  S_ArrayUsuarios* usuarios)
+void Imprime_Comentario( comentario_s* comentario,  vetor_usuarios_s* usuarios)
 {
-    S_Usuario* Autor = Achar_Usuario_Pelo_Id(usuarios, comentario->Perfil_Id); //recebe os dados do usuario que comentou
+    usuario_s* Autor = Achar_Usuario_Pelo_Id(usuarios, comentario->Perfil_Id); //recebe os dados do usuario que comentou
 
     printf("Comentario #%06u\n", comentario->Id); //imprime o id da postagem
 
@@ -1536,7 +1537,7 @@ void Imprime_Comentario( S_Comentario* comentario,  S_ArrayUsuarios* usuarios)
     return;
 }
 
-void Imprime_Comentarios( S_ArrayComentarios* vetor_comentarios,  S_ArrayUsuarios* vetor_usuarios)
+void Imprime_Comentarios( vetor_comentarios_s* vetor_comentarios,  vetor_usuarios_s* vetor_usuarios)
 {
     if(vetor_comentarios->Quantidade < 1){ //se a quantidade de comentarios do vetor passado for menor que 1, significa que não ha nenhum comentario
         printf("A postagem nao tem comentarios\n");
@@ -1544,13 +1545,13 @@ void Imprime_Comentarios( S_ArrayComentarios* vetor_comentarios,  S_ArrayUsuario
     else
     {
         for(int i = 0; i < vetor_comentarios->Quantidade; i++){ //percorre os comentarios imprimindo um por um
-            Imprime_Comentario(&vetor_comentarios->dados_Comentario[i], vetor_usuarios);
+            Imprime_Comentario(&vetor_comentarios->dadocomentario_s[i], vetor_usuarios);
         }
     }
     return;
 }
 
-bool Imprime_Comentarios_DoUsuario( S_ArrayComentarios* vetor_comentarios,  S_ArrayUsuarios* vetor_usuarios, unsigned int id_usuario)
+bool Imprime_Comentarios_DoUsuario( vetor_comentarios_s* vetor_comentarios,  vetor_usuarios_s* vetor_usuarios, unsigned int id_usuario)
 {
     bool TemComentarios = false; //booleano que checa se existe comentario do usario logado no post
 
@@ -1562,7 +1563,7 @@ bool Imprime_Comentarios_DoUsuario( S_ArrayComentarios* vetor_comentarios,  S_Ar
 
     for(int i = 0; i < vetor_comentarios->Quantidade; i++) //percorre o vetor de comentarios
     {
-        S_Comentario* Comentario = &vetor_comentarios->dados_Comentario[i]; //cria uma referencia ao comentario para nao ficar tao verbalizado a variavel
+        comentario_s* Comentario = &vetor_comentarios->dadocomentario_s[i]; //cria uma referencia ao comentario para nao ficar tao verbalizado a variavel
 
         if(Verifica_Autoria(Comentario, id_usuario) == true) //verifica se foi o usuario que realizou o comentario
         {
@@ -1579,7 +1580,7 @@ bool Imprime_Comentarios_DoUsuario( S_ArrayComentarios* vetor_comentarios,  S_Ar
     return true;
 }
 
-void Desaloca_Imagem(S_ArrayImagens* array)
+void Desaloca_Imagem(vetor_imagens_s* array)
 {
     if(array->Quantidade == 0)
         return;
@@ -1603,7 +1604,7 @@ void Desaloca_Imagem(S_ArrayImagens* array)
 * Ela é do tipo 'int' porque caso o usuario peca para finalizar o programa ela retornara o valor 1, quebrando o loop do 'while'
 */
 
-void Imprimir_Comentarios(S_Postagem* postagem) //menu que tem as opcoes de impressao dos comentarios
+void Imprimir_Comentarios(postagens_s* postagem) //menu que tem as opcoes de impressao dos comentarios
 {
     int opcao = 0;
     unsigned int Id = 0;
@@ -1647,7 +1648,7 @@ void Imprimir_Comentarios(S_Postagem* postagem) //menu que tem as opcoes de impr
     }
 }
 
-void Menu_Postagem(S_Postagem* postagem)
+void Menu_Postagem(postagens_s* postagem)
 {
     int opcao = 0;
     do
@@ -1718,7 +1719,7 @@ void Menu_Postagem(S_Postagem* postagem)
     } while (1);
 }
 
-void Mostrar_Postagem(S_Postagem* postagem)
+void Mostrar_Postagem(postagens_s* postagem)
 {
     //se o valor de postagem for nulo imprime mensagem de erro e sai da funcao
     if(postagem == NULL)
@@ -1732,7 +1733,7 @@ void Mostrar_Postagem(S_Postagem* postagem)
     return;
 }
 
-void Mostrar_Postagens_EmMenu(S_ArrayPostagens* vetor_postagens)
+void Mostrar_Postagens_EmMenu(vetor_postagens_s* vetor_postagens)
 {
     int opcao = 0, Indice_atual = 0;
 
@@ -1744,8 +1745,8 @@ void Mostrar_Postagens_EmMenu(S_ArrayPostagens* vetor_postagens)
 
     do
     {
-        S_Postagem* Postagem_Atual = &vetor_postagens->Postagens[Indice_atual]; //recebe a referencia da memoria do que esta apos a igualdade
-        S_Usuario* Postagem_Autor = Achar_Usuario_Pelo_Id(&Vetor_Usuarios, Postagem_Atual->Autor_Id); 
+        postagens_s* Postagem_Atual = &vetor_postagens->Postagens[Indice_atual]; //recebe a referencia da memoria do que esta apos a igualdade
+        usuario_s* Postagem_Autor = Achar_Usuario_Pelo_Id(&Vetor_Usuarios, Postagem_Atual->Autor_Id); 
 
         printf("-------------------------------------------------\n");
 
@@ -1796,7 +1797,7 @@ void Mostrar_Postagens_EmMenu(S_ArrayPostagens* vetor_postagens)
 
 void Mostrar_Postagens_Curtidas()
 {
-    S_ArrayPostagens Curtidas; //array que guarda as postagens curtidas pelo usuario
+    vetor_postagens_s Curtidas; //array que guarda as postagens curtidas pelo usuario
 
     Curtidas.Quantidade = 0;
     Curtidas.Postagens =  NULL;
@@ -1812,7 +1813,7 @@ void Mostrar_Postagens_Curtidas()
 
 void Mostrar_Tela_UsuarioAtivo()
 {
-    S_ArrayPostagens Posts_DoUsuario = {0, NULL};
+    vetor_postagens_s Posts_DoUsuario = {0, NULL};
 
     do
     {
@@ -1849,12 +1850,12 @@ void Mostrar_Tela_UsuarioAtivo()
     } while (1);
 }
 
-void Mostrar_Usuarios_EmMenu(S_ArrayUsuarios* array)
+void Mostrar_Usuarios_EmMenu(vetor_usuarios_s* array)
 {
     int opcao = 0, Indice_atual = 0;
     do
     {
-        S_Usuario* Usuario_atual = &array->Usuarios[Indice_atual];
+        usuario_s* Usuario_atual = &array->Usuarios[Indice_atual];
 
         printf("Id #%06u \n", Usuario_atual->Id);
         printf("Nome: %s \n", Usuario_atual->Nome);
@@ -1942,13 +1943,13 @@ void Mostrar_Configs_Usuario()
 
 void Menu_Principal()
 {
-    S_ArrayPostagens posts_Usuario; //array dos posts do usuario logado
+    vetor_postagens_s posts_Usuario; //array dos posts do usuario logado
     
     //inicializando esse valores
     posts_Usuario.Quantidade = 0;
     posts_Usuario.Postagens = NULL;
 
-    S_ArrayUsuarios resultado_usuarios_busca; //array de usuarios retornados da funcao de busca
+    vetor_usuarios_s resultado_usuarios_busca; //array de usuarios retornados da funcao de busca
 
     //inicializando esses valores 
     resultado_usuarios_busca.Quantidade = 0;
