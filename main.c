@@ -488,14 +488,10 @@ S_Usuario* Logar_Usuario( S_ArrayUsuarios* array)
     } while (1);
 }
 
-
-
-
 void Deslogar_Usuario(S_Usuario** usuario)
 {
     *usuario = NULL;
 }
-
 
 void Alterar_Senha_Usuario(S_Usuario* usuario)
 {
@@ -521,7 +517,6 @@ void Alterar_Senha_Usuario(S_Usuario* usuario)
     return;
 }
 
-
 void Alterar_Nome_Usuario(S_Usuario* usuario)
 {
     printf(">> Digite o novo nome: ");
@@ -531,7 +526,6 @@ void Alterar_Nome_Usuario(S_Usuario* usuario)
     printf(">> Nome alterado com sucesso! <<\n");
     return;
 }
-
 
 void Alterar_Email_Usuario(S_Usuario* usuario)
 {
@@ -555,7 +549,6 @@ void Alterar_Email_Usuario(S_Usuario* usuario)
     return;
 }
 
-
 void Alterar_Bio_Usuario(S_Usuario* usuario)
 {
     printf(">> Escreva uma breve descricao sua: ");
@@ -575,7 +568,6 @@ int Checar_Usuario_CurtiuPost( S_Usuario* usuario, unsigned int post_id)
     }
     return -1;
 }
-
 
 int Checar_Usuario_Comentou( S_Usuario* usuario, unsigned int post_id)
 {
@@ -597,13 +589,11 @@ void Mostrar_Usuario( S_Usuario* usuario)
     printf("> Comentarios Feitos: %u \n", usuario->PostagensComentadas.Quantidade);
 }
 
-
 void Mostrar_Usuario_EmTabela( S_Usuario* usuario)
 {
     printf("| %06u | %-16.16s | %-37.37s | %-38.38s |\n",
         usuario->Id, usuario->Nome, usuario->Email, usuario->Bio);
 }
-
 
 void Mostrar_Usuarios( S_ArrayUsuarios* array)
 {
@@ -862,8 +852,6 @@ void Liberar_Postagens(S_ArrayPostagens* array)
     return;
 }
 
-
-
 void Adicionar_Postagem_NoArray(S_ArrayPostagens* array,  S_Postagem* postagem)
 {
     Alocar_Postagem(array);
@@ -880,7 +868,6 @@ S_Postagem* Achar_Postagem_PorId( S_ArrayPostagens* array, unsigned int id_posta
     }
     return NULL;
 }
-
 
 void Postar(S_ArrayPostagens* array, unsigned int id_autor)
 {
